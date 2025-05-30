@@ -2,31 +2,26 @@ package com.invop.inventario.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import java.util.ArrayList;
+import java.util.List;
+import java.time.LocalDate;
 
 @Entity
 @Data
 @Table(name = "proveedores")
 public class Proveedor {
 
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "nombre", nullable = false)
-    private String name;
+    private String nombre;
 
-    @Column(name = "email", nullable = false)
-    private String email;
+    private LocalDate fechaBajaProveedor;
 
-    @Column(name = "telefono", nullable = false)
-    private String phone;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "id_proveedor")
+    private List<ProveedorArticulo> articulosProveedor = new ArrayList<>();
 
-    @Column(name = "direccion", nullable = false)
-    private String address;
-
-    @Column(name = "cuit", nullable = false)
-    private String cuit;
-
-    //@Column(name = "articulo")
-    //private Articulo articulo;
 }
