@@ -15,6 +15,7 @@ public class Articulo {
     private Long id;
 
     private Long codArticulo;
+    private String nombre;
     private String descripcion;
     private float demandaArticulo;
     private float costoAlmacenamiento;
