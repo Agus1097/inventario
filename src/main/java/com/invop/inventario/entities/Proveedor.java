@@ -1,5 +1,6 @@
 package com.invop.inventario.entities;
 
+import com.invop.inventario.dto.ProveedorArticuloDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.ArrayList;
@@ -22,6 +23,6 @@ public class Proveedor {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "id_proveedor")
-    private List<ProveedorArticulo> articulosProveedor = new ArrayList<>();
+    private List<ProveedorArticuloDTO> articulosProveedor;
 
 }

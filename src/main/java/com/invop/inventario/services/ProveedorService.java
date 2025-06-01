@@ -1,5 +1,6 @@
 package com.invop.inventario.services;
 
+import com.invop.inventario.dto.ProveedorDTO;
 import com.invop.inventario.entities.Proveedor;
 import com.invop.inventario.repositories.ProveedorRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,5 +16,9 @@ public class ProveedorService {
 
     public List<Proveedor> findAll() {
         return proveedorRepository.findAll();
+    }
+
+    public boolean tieneArticulo(ProveedorDTO proveedorDTO) {
+
     }
 }
