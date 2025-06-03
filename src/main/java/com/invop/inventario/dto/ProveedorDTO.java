@@ -27,6 +27,7 @@ public class ProveedorDTO {
 
         private int stockArticulo;
 
-        private List<ProveedorArticulo> articulosProveedor = new ArrayList<>();
+        private List<ProveedorArticuloDTO> articulosProveedor = new ArrayList<>();
+
 
 }

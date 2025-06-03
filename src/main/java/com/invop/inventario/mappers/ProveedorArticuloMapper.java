@@ -16,6 +16,6 @@ public interface ProveedorArticuloMapper {
     ProveedorArticuloMapper toDto(Proveedor proveedor);
     ProveedorArticuloDTO toEntity(Proveedor proveedor);
 
-    List<ProveedorArticuloDTO> toDto(List<Proveedor> proveedor);
-    List<ProveedorArticulo> toEntity(List<ProveedorDTO> dtos);
+    List<ProveedorArticuloDTO> toDtoList(List<Proveedor> proveedor);
+    List<ProveedorArticulo> toEntityList(List<ProveedorDTO> dtos);
 }

@@ -1,3 +1,5 @@
+package com.invop.inventario.entities;
+
 import com.invop.inventario.entities.DetalleOrden;
 import com.invop.inventario.entities.EstadoOrden;
 import jakarta.persistence.*;

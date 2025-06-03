@@ -2,7 +2,16 @@ package com.invop.inventario.dto;
 
 import com.invop.inventario.entities.Articulo;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProveedorArticuloDTO {
 
 
@@ -14,5 +23,9 @@ public class ProveedorArticuloDTO {
 
     private float cargosPedido;
 
-    private ArticuloDTO articulo;
+    private List<ArticuloDTO> articulo = new ArrayList<>();
+
+    private List<ProveedorDTO> proveedores = new ArrayList<>();
+
+
 }

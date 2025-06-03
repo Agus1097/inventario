@@ -3,9 +3,16 @@ package com.invop.inventario.dto;
 import com.invop.inventario.entities.Proveedor;
 import com.invop.inventario.entities.TipoModelo;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ArticuloDTO {
 
 
@@ -26,6 +33,5 @@ public class ArticuloDTO {
 
     private ProveedorDTO proveedorPredeterminado;
 
-    //habria q hacer dto de esto?
     private TipoModelo tipoModelo;
 }
