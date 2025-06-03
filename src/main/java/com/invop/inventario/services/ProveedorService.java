@@ -55,7 +55,6 @@ public class ProveedorService {
             List<String> estados = List.of("EN_CURSO","PENDIENTE");
             boolean estaPendiente = ordenCompraRepository.existsByProveedorAndEstadoOrdenNombreIn(proveedorId, estados);
 
-
             return esPredeterminado && estaPendiente;
 
         }catch (Exception e){

@@ -47,7 +47,7 @@ public class ProveedorController {
     @PostMapping
     public ResponseEntity<?> create(@RequestBody ProveedorDTO proveedorDTO) {
         try{
-            if ( !proveedorDTO.getArticulosProveedor().isEmpty() ) {
+            if ( proveedorDTO.getArticulosProveedor().isEmpty() ) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body("Necesita almenos un articulo asociado, para darse de alta como proveedor");
             }
