@@ -23,6 +23,6 @@ public class Proveedor {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "id_proveedor")
-    private List<ProveedorArticulo> proveedorArticulos;
+    private List<ProveedorArticulo> proveedorArticulos = new ArrayList<>();
 
 }
