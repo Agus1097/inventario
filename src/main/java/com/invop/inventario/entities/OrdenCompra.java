@@ -1,30 +1,41 @@
-import com.invop.inventario.entities.DetalleOrden;
-import com.invop.inventario.entities.EstadoOrden;
+package com.invop.inventario.entities;
+
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name = "ordenes_compra")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity
+@Table(name = "ordenes_compras")
 public class OrdenCompra {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private LocalDate fechaOrdenCompra;
+    @CreationTimestamp
+    @Column(name = "fecha_creacion", nullable = false)
+    private LocalDate fechaCreacionOrdenCompra;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_estado_orden", nullable = false)
+    @Column(name = "fecha_modificacion")
+    private LocalDate fechaModificacionOrdenCompra;
+
+    @Column(name = "estado_orden")
+    @Enumerated(EnumType.STRING)
     private EstadoOrden estadoOrden;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "id_orden_compra")
-    private List<DetalleOrden> detalles = new ArrayList<>();
+    private List<DetalleOrden> detalles;
 
-
+    @Column(name = "monto_total")
+    private float montoTotal;
 }

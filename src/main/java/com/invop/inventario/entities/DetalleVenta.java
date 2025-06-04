@@ -7,10 +7,12 @@ import lombok.Data;
 @Data
 @Table
 public class DetalleVenta {
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
+    @Column(name = "cantidad_articulo")
     private int cantidadArticulo;
 
     @ManyToOne

@@ -1,13 +1,19 @@
 package com.invop.inventario.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
 
-@Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
 @Table(name = "proveedores")
 public class Proveedor {
 
@@ -18,6 +24,7 @@ public class Proveedor {
     @Column(name = "nombre", nullable = false)
     private String nombre;
 
+    @Column(name = "fecha_baja_proveedor")
     private LocalDate fechaBajaProveedor;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
