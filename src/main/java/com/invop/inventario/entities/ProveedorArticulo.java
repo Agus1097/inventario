@@ -21,7 +21,7 @@ public class ProveedorArticulo {
     @Column(name = "cargos_pedido")
     private float cargosPedido;
 
-    //revisar
+    //TODO: revisar
     @ManyToOne
     @JoinColumn(name = "id_articulo")
     private Articulo articulo;

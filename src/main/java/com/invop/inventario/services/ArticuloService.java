@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ArticuloService {
@@ -41,8 +40,8 @@ public class ArticuloService {
         return articuloRepository.save(articulo);
     }
 
-    public Optional<Articulo> findById(Long id) {
-        return articuloRepository.findById(id);
+    public Articulo findById(Long id) {
+        return articuloRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("El artículo no existe"));
     }
 
     @Transactional

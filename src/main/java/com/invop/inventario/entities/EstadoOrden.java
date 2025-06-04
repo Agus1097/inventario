@@ -1,14 +1,19 @@
 package com.invop.inventario.entities;
 
-import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 
-@Entity
-@Table
-@Data
-public class EstadoOrden {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Id
-    private Long id;
-    private String nombreEstado;
+@Getter
+public enum EstadoOrden {
+    PENDIENTE(1L, "Pendiente"),
+    ENVIADO(2L, "Enviado"),
+    CANCELADO(3L, "Cancelado");
+
+    private final Long id;
+    private final String nombre;
+
+    EstadoOrden(Long id, String nombre) {
+        this.id = id;
+        this.nombre = nombre;
+    }
 }
+

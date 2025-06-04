@@ -15,8 +15,8 @@ public class Venta {
     @Id
     private Long id;
 
+    @Column(name = "fecha_venta")
     private Date fechaVenta;
-
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "venta_id")

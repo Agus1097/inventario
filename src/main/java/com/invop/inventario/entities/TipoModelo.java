@@ -12,5 +12,6 @@ public class TipoModelo {
     @Id
     private Long id;
 
+    @Column(name = "nombre_tipo_modelo")
     private String nombreTipoModelo;
 }
