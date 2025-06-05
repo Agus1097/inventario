@@ -10,31 +10,50 @@ import java.util.Date;
 @Table
 @Data
 public class Articulo {
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
+    @Column(name = "cod_articulo")
     private Long codArticulo;
+
     private String nombre;
+
     private String descripcion;
+
+    @Column(name = "demanda_articulo")
     private float demandaArticulo;
+
+    @Column(name = "costo_almacenamiento")
     private float costoAlmacenamiento;
+
+    @Column(name = "costo_pedido")
     private float costoPedido;
+
+    @Column(name = "costo_compra")
     private float costoCompra;
-    @Column(nullable = true)
+
+    @Column(name = "fecha_baja_articulo")
     private LocalDate fechaBajaArticulo;
-    @Column(nullable = true)
+
+    @Column(name = "punto_pedido")
     private int puntoPedido;
-    @Column(nullable = true)
+
+    @Column(name = "stock_seguridad")
     private int stockSeguridad;
-    @Column(nullable = true)
+
+    @Column(name = "inventario_maximo")
     private int inventarioMaximo;
-    @Column(nullable = true)
+
+    @Column(name = "lote_optimo")
     private int loteOptimo;
+
+    @Column(name = "stock_actual")
     private int stockActual;
 
     @ManyToOne
-    @JoinColumn(name = "id_proveedor_predeterminado", nullable = true)
+    @JoinColumn(name = "id_proveedor_predeterminado")
     private Proveedor proveedorPredeterminado;
 
     @ManyToOne

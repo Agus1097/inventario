@@ -2,18 +2,17 @@ package com.invop.inventario.controllers;
 
 import com.invop.inventario.entities.Articulo;
 import com.invop.inventario.services.ArticuloService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/articulos")
 public class ArticuloController {
 
-    @Autowired
     private ArticuloService articuloService;
 
     //TODO argregar paginado
@@ -36,9 +35,7 @@ public class ArticuloController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Articulo> getArticuloById(@PathVariable Long id) {
-        return articuloService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(articuloService.findById(id));
     }
 
     @PutMapping("/{id}")
