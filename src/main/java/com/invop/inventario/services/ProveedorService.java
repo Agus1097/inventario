@@ -1,24 +1,17 @@
 package com.invop.inventario.services;
 
 import com.invop.inventario.dto.ArticuloDTO;
-import com.invop.inventario.dto.ProveedorDTO;
+import com.invop.inventario.entities.EstadoOrden;
 import com.invop.inventario.entities.Proveedor;
 import com.invop.inventario.mappers.ArticuloMapper;
-import com.invop.inventario.mappers.ProveedorMapper;
 import com.invop.inventario.repositories.ArticuloRepository;
-import com.invop.inventario.repositories.EstadoOrdenRepository;
 import com.invop.inventario.repositories.OrdenCompraRepository;
 import com.invop.inventario.repositories.ProveedorRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,9 +44,8 @@ public class ProveedorService {
 
             boolean esPredeterminado = articuloRepository.existsByProveedorPredeterminado(proveedor);
 
-            // aca poner el nombre de los estados bien
-            List<String> estados = List.of("EN_CURSO","PENDIENTE");
-            boolean estaPendiente = ordenCompraRepository.existsByProveedorAndEstadoOrdenNombreIn(proveedorId, estados);
+            // TODO: tmb hay un estado en_curso?
+            boolean estaPendiente = ordenCompraRepository.existsByProveedor_IdAndEstadoOrden(proveedorId, EstadoOrden.PENDIENTE);
 
             return esPredeterminado && estaPendiente;
 

@@ -2,6 +2,7 @@ package com.invop.inventario.controllers;
 
 import com.invop.inventario.entities.Articulo;
 import com.invop.inventario.services.ArticuloService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

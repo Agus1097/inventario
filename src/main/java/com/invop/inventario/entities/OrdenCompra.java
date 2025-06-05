@@ -38,4 +38,8 @@ public class OrdenCompra {
 
     @Column(name = "monto_total")
     private float montoTotal;
+
+    @ManyToOne
+    private Proveedor proveedor;
+
 }
