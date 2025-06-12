@@ -21,6 +21,9 @@ public class Articulo {
 
     private String descripcion;
 
+    @Column(name ="produccion_diaria")
+    private float produccionDiaria;
+
     @Column(name = "demanda_articulo")
     private float demandaArticulo;
 
@@ -60,23 +63,37 @@ public class Articulo {
     @JoinColumn(name = "id_tipo_modelo")
     private TipoModelo tipoModelo;
 
-    public int calcularCGI() {
+    public int calcularCGI(float precioUnitario) {
+        // demanda * precioUnitario + demanda/cantidad * costoPedido + costoAlmacenamiento*cantidad/2
         return cgi;
     };
 
     public int calcularStockSeguridad() {
+        //periodo fijo
+        // z * desviacionStandar * (numeroDiasEntreRevision + TiempoEntrega)
+        // lote fijo
+        // z * desviacionStandar
         return stockSeguridad;
     }
 
     public int calcularLoteOptimo() {
+        // lote fijo
+        // raizcuadrada(2*demanda*costoPedido / costoAlacemaniento)
+
+        //todo
+        //periodo fijo /// intervalo fijo
+        // demanda diaria * (numeroDiasEntreRevision + TiempoEntrega) + z * desviacionStandar * (numeroDiasEntreRevision + TiempoEntrega) - nivelInventarioActual
         return loteOptimo;
     }
 
     public int calcularPuntoPedido() {
+        // lote fijo
+        // demandadiaria * tiempoEntrega + stockSeguridad
         return puntoPedido;
     }
 
     public int calcularInventarioMaximo() {
+        // Cantidad * ( 1 - demandaDiaria/producciondiaria)
         return inventarioMaximo;
     }
 }

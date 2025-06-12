@@ -3,11 +3,10 @@ package com.invop.inventario.controllers;
 import com.invop.inventario.entities.Articulo;
 import com.invop.inventario.services.ArticuloService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -18,8 +17,9 @@ public class ArticuloController {
 
     //TODO argregar paginado
     @GetMapping
-    public ResponseEntity<List<Articulo>> getAllArticulos() {
-        return ResponseEntity.ok(articuloService.findAll());
+    public Page<Articulo> getAllArticulos(@RequestParam(defaultValue = "0") int page,
+                                             @RequestParam(defaultValue = "10") int pageSize) {
+        return articuloService.findAll(page, pageSize);
     }
 
     @PostMapping
@@ -52,8 +52,6 @@ public class ArticuloController {
         articuloService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
-
-
 
 
 //    @PutMapping("/{id}/set-proveedor")
