@@ -1,16 +1,19 @@
 package com.invop.inventario.services;
 
+
 import com.invop.inventario.entities.Articulo;
 import com.invop.inventario.entities.Proveedor;
 import com.invop.inventario.repositories.ArticuloRepository;
 import com.invop.inventario.repositories.ProveedorRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class ArticuloService {
@@ -19,8 +22,9 @@ public class ArticuloService {
     @Autowired
     private ProveedorRepository proveedorRepository;
 
-    public List<Articulo> findAll() {
-        return articuloRepository.findAll();
+    public Page<Articulo> findAll(int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        return articuloRepository.findAll(pageable);
     }
 
     @Transactional
@@ -129,8 +133,6 @@ public class ArticuloService {
         articulo.setProveedorPredeterminado(proveedor);
         return articuloRepository.save(articulo);
     }
-
-
 
 
 //    @Transactional

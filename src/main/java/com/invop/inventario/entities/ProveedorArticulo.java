@@ -26,4 +26,7 @@ public class ProveedorArticulo {
     @JoinColumn(name = "id_articulo")
     private Articulo articulo;
 
+    @Column(name = "tiempo_revision")
+    private float tiempoRevision;
+
 }
