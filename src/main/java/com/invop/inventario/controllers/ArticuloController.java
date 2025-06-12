@@ -3,7 +3,7 @@ package com.invop.inventario.controllers;
 import com.invop.inventario.entities.Articulo;
 import com.invop.inventario.services.ArticuloService;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.query.Page;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,7 @@ public class ArticuloController {
     //TODO argregar paginado
     @GetMapping
     public Page<Articulo> getAllArticulos(@RequestParam(defaultValue = "0") int page,
-                                          @RequestParam(defaultValue = "10") int pageSize) {
+                                             @RequestParam(defaultValue = "10") int pageSize) {
         return articuloService.findAll(page, pageSize);
     }
 
