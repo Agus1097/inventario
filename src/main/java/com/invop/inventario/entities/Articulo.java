@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity
 @Table
@@ -51,6 +50,7 @@ public class Articulo {
 
     @Column(name = "stock_actual")
     private int stockActual;
+    private int cgi;
 
     @ManyToOne
     @JoinColumn(name = "id_proveedor_predeterminado")
@@ -59,4 +59,24 @@ public class Articulo {
     @ManyToOne
     @JoinColumn(name = "id_tipo_modelo")
     private TipoModelo tipoModelo;
+
+    public int calcularCGI() {
+        return cgi;
+    };
+
+    public int calcularStockSeguridad() {
+        return stockSeguridad;
+    }
+
+    public int calcularLoteOptimo() {
+        return loteOptimo;
+    }
+
+    public int calcularPuntoPedido() {
+        return puntoPedido;
+    }
+
+    public int calcularInventarioMaximo() {
+        return inventarioMaximo;
+    }
 }
