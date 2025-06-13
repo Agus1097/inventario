@@ -1,17 +1,18 @@
 package com.invop.inventario.entities;
 
-import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 
-@Entity
-@Data
-@Table
-public class TipoModelo {
+@Getter
+public enum TipoModelo {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Id
-    private Long id;
+    LOTE_FIJO(1L, "Lote Fijo"),
+    INTERVALO_FIJO(2L, "Intervalo Fijo"),;
 
-    @Column(name = "nombre_tipo_modelo")
-    private String nombreTipoModelo;
+    private final Long id;
+    private final String nombre;
+
+    TipoModelo(Long id, String nombre) {
+        this.id = id;
+        this.nombre = nombre;
+    }
 }

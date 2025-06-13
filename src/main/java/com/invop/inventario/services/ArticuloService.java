@@ -89,7 +89,7 @@ public class ArticuloService {
         articulo.setProveedorPredeterminado(articuloDetails.getProveedorPredeterminado());
         articulo.setTipoModelo(articuloDetails.getTipoModelo());
 
-        articulo.setCgi(articulo.calcularCGI());
+
 
         //Para modelo Lote Fijo
         if (articulo.getTipoModelo().getId() == 1) {

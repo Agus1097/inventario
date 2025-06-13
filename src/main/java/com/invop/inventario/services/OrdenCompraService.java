@@ -4,7 +4,6 @@ import com.invop.inventario.dtos.OrdenCompraArticuloDTO;
 import com.invop.inventario.dtos.OrdenCompraCreatedDTO;
 import com.invop.inventario.dtos.OrdenCompraUpdateDTO;
 import com.invop.inventario.entities.Articulo;
-import com.invop.inventario.entities.DetalleOrden;
 import com.invop.inventario.entities.EstadoOrden;
 import com.invop.inventario.entities.OrdenCompra;
 import com.invop.inventario.repositories.OrdenCompraRepository;
