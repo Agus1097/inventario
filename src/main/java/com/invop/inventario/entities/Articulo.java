@@ -31,8 +31,8 @@ public class Articulo {
     @Column(name = "costo_almacenamiento")
     private float costoAlmacenamiento;
 
-    @Column(name = "costo_compra")
-    private float costoCompra;
+    @Column(name = "costo_venta")
+    private float costoVenta;
 
     @Column(name = "fecha_baja_articulo")
     private LocalDate fechaBajaArticulo;
