@@ -9,7 +9,6 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -39,7 +38,11 @@ public class OrdenCompra {
     @Column(name = "monto_total")
     private float montoTotal;
 
+    @Column
+    private int cantidad;
+
     @ManyToOne
+    @JoinColumn(name = "id_proveedor")
     private Proveedor proveedor;
 
 }

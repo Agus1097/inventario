@@ -2,10 +2,8 @@ package com.invop.inventario.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+
 
 @Entity
 @Table
@@ -16,9 +14,16 @@ public class Venta {
     private Long id;
 
     @Column(name = "fecha_venta")
+    @Temporal(TemporalType.TIMESTAMP) // Opcional, especifica el tipo de fecha
     private Date fechaVenta;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "venta_id")
-    private List<DetalleVenta> detallesVenta = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "id_articulo")
+    private Articulo articulo;
+
+    @Column
+    private int cantidad;
+
+    @Column(name = "monto_total")
+    private float montoTotal;
 }
