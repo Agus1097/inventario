@@ -6,7 +6,8 @@ import lombok.Getter;
 public enum EstadoOrden {
     PENDIENTE(1L, "Pendiente"),
     ENVIADO(2L, "Enviado"),
-    CANCELADO(3L, "Cancelado");
+    FINALIZADO(3L, "Finalizado"),
+    CANCELADO(4L, "Cancelado");
 
     private final Long id;
     private final String nombre;

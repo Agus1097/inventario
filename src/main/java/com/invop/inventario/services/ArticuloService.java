@@ -150,4 +150,15 @@ public class ArticuloService {
         articulo.setProveedorPredeterminado(proveedor);
         return articuloRepository.save(articulo);
     }
+
+    public List<Articulo> getArticulosAReponer() {
+        return articuloRepository.findArticulosAReponer();
+    }
+
+    public List<Articulo> getArticulosFaltantes() {
+        // Devuelve todos los artículos cuyo stockActual <= stockSeguridad
+        return articuloRepository.findAll().stream()
+                .filter(a -> a.getStockActual() <= a.getStockSeguridad())
+                .toList();
+    }
 }

@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/articulos")
 public class ArticuloController {
@@ -48,5 +50,15 @@ public class ArticuloController {
     public ResponseEntity<Articulo> setProveedorPredeterminado(@PathVariable Long id, @RequestParam(required = false) Long proveedorId) {
         Articulo updated = articuloService.setProveedorPredeterminado(id, proveedorId);
         return ResponseEntity.ok(updated);
+    }
+
+    @GetMapping("/a-reponer")
+    public List<Articulo> getArticulosAReponer() {
+        return articuloService.getArticulosAReponer();
+    }
+
+    @GetMapping("/faltantes")
+    public List<Articulo> getArticulosFaltantes() {
+        return articuloService.getArticulosFaltantes();
     }
 }
