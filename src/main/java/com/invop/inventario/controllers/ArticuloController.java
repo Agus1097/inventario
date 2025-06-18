@@ -2,74 +2,51 @@ package com.invop.inventario.controllers;
 
 import com.invop.inventario.entities.Articulo;
 import com.invop.inventario.services.ArticuloService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/articulos")
 public class ArticuloController {
 
+    @Autowired
     private ArticuloService articuloService;
 
-    //TODO argregar paginado
     @GetMapping
-    public Page<Articulo> getAllArticulos(@RequestParam(defaultValue = "0") int page,
-                                             @RequestParam(defaultValue = "10") int pageSize) {
-        return articuloService.findAll(page, pageSize);
-    }
-
-    @PostMapping
-    public ResponseEntity<?> createArticulo(@RequestBody Articulo articulo) {
-        try {
-            Articulo savedArticulo = articuloService.saveArticulo(articulo);
-            return new ResponseEntity<>(savedArticulo, HttpStatus.CREATED);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error al guardar el artículo");
-        }
+    public Page<Articulo> getAll(@RequestParam(defaultValue = "0") int page,
+                                 @RequestParam(defaultValue = "10") int size) {
+        return articuloService.findAll(page, size);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Articulo> getArticuloById(@PathVariable Long id) {
-        return ResponseEntity.ok(articuloService.findById(id));
+    public ResponseEntity<Articulo> getById(@PathVariable Long id) {
+        Articulo articulo = articuloService.findById(id);
+        return ResponseEntity.ok(articulo);
+    }
+
+    @PostMapping
+    public ResponseEntity<Articulo> create(@RequestBody Articulo articulo) {
+        Articulo created = articuloService.saveArticulo(articulo);
+        return ResponseEntity.ok(created);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Articulo> updateArticulo(@PathVariable Long id, @RequestBody Articulo articuloDetails) {
-        Articulo articuloActualizado = articuloService.updateArticulo(id, articuloDetails);
-        return ResponseEntity.ok(articuloActualizado);
+    public ResponseEntity<Articulo> update(@PathVariable Long id, @RequestBody Articulo articulo) {
+        Articulo updated = articuloService.updateArticulo(id, articulo);
+        return ResponseEntity.ok(updated);
     }
 
-    //TODO agregar validacion de que no queden ordenes de compra pendientes
-    //TODO cambiar mensajes de error
-    @PutMapping("/{id}/desactivar")
-    public ResponseEntity<Void> deleteArticulo(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         articuloService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
-
-//    @PutMapping("/{id}/set-proveedor")
-//    public ResponseEntity<?> setProveedorPredeterminado(
-//            @PathVariable Long id,
-//            @RequestParam(required = false) Long proveedorId) {
-//        try {
-//            Articulo articulo = articuloService.setProveedorPredeterminado(id, proveedorId);
-//            return ResponseEntity.ok(articulo);
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
-//    }
-
-//    @PutMapping("/{id}/activar")
-//    public ResponseEntity<Void> activateArticulo(@PathVariable Long id) {
-//        articuloService.activateById(id);
-//        return ResponseEntity.noContent().build();
-//    }
-
+    @PutMapping("/{id}/proveedor-predeterminado")
+    public ResponseEntity<Articulo> setProveedorPredeterminado(@PathVariable Long id, @RequestParam(required = false) Long proveedorId) {
+        Articulo updated = articuloService.setProveedorPredeterminado(id, proveedorId);
+        return ResponseEntity.ok(updated);
+    }
 }

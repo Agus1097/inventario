@@ -25,6 +25,9 @@ public class Articulo {
     @Column(name ="produccion_diaria")
     private float produccionDiaria;
 
+    @Column
+    private float CGI;
+
     @Column(name = "demanda_articulo")
     private float demandaArticulo;
 
@@ -55,43 +58,36 @@ public class Articulo {
     @Column
     private float z;
 
-    @Column
+    @Column(name = "desviacion_estandar")
     private float desviacionEstandar;
 
-    @Column
-    private int numeroDiasEntreRevision;
-
-    @Column
+    @Column(name = "produccion_diaria")
     private int producciondiaria;
 
     @ManyToOne
     @JoinColumn(name = "id_proveedor_predeterminado")
     private Proveedor proveedorPredeterminado;
 
-    @ManyToOne
-    @JoinColumn(name = "id_tipo_modelo")
-    private TipoModelo tipoModelo;
-
-    public float calcularCGI(float precioUnitario, float costoPedido) {
+    public void calcularCGI(float precioUnitario, float costoPedido) {
         // demanda * precioUnitario + demanda/cantidad * costoPedido + costoAlmacenamiento*cantidad/2
 
-        return this.demandaArticulo * precioUnitario + this.demandaArticulo / this.loteOptimo * costoPedido + this.costoAlmacenamiento * this.loteOptimo/2;
+        this.CGI = this.demandaArticulo * precioUnitario + this.demandaArticulo / this.loteOptimo * costoPedido + this.costoAlmacenamiento * this.loteOptimo/2;
     };
 
-    public int calcularStockSeguridad(int demoraEntrega) {
+    public void calcularStockSeguridad(int demoraEntrega, float tiempoRevision, Long tipoModeloId) {
         //periodo fijo
         // z * desviacionStandar * (numeroDiasEntreRevision + TiempoEntrega)
         // lote fijo
         // z * desviacionStandar
 
-        if (Objects.equals(this.getTipoModelo().getId(), TipoModelo.LOTE_FIJO.getId())) {
+        if (Objects.equals(tipoModeloId, TipoModelo.LOTE_FIJO.getId())) {
             this.stockSeguridad = (int) (this.z * this.desviacionEstandar);
         } else {
-            this.stockSeguridad = (int) (this.z * this.desviacionEstandar) * (this.numeroDiasEntreRevision + demoraEntrega);
+            this.stockSeguridad = (int) ((this.z * this.desviacionEstandar) * (tiempoRevision + demoraEntrega));
         }
     }
 
-    public void calcularLoteOptimo(float cargosPedido, int demoraEntrega) {
+    public void calcularLoteOptimo(float cargosPedido, Long tipoModeloId, int demoraEntrega, float tiempoRevision) {
         // lote fijo
         // raizcuadrada(2*demanda*costoPedido / costoAlacemaniento)
 
@@ -99,16 +95,14 @@ public class Articulo {
         //periodo fijo /// intervalo fijo
         // demanda diaria * (numeroDiasEntreRevision + TiempoEntrega) + z * desviacionStandar * (numeroDiasEntreRevision + TiempoEntrega) - nivelInventarioActual
 
-        if (Objects.equals(this.getTipoModelo().getId(), TipoModelo.LOTE_FIJO.getId())) {
-            this.loteOptimo = (int) (2 * this.demandaArticulo * cargosPedido / this.costoAlmacenamiento);
+        if (Objects.equals(tipoModeloId, TipoModelo.LOTE_FIJO.getId())) {
+            this.loteOptimo = (int) Math.pow((2 * this.demandaArticulo * cargosPedido / this.costoAlmacenamiento), 0.5);
         } else {
-            this.loteOptimo = (int) (this.demandaArticulo * ( this.numeroDiasEntreRevision + demoraEntrega ) + this.stockSeguridad - this.stockActual);
+            this.loteOptimo = (int) (this.demandaArticulo / 365 * ( tiempoRevision + demoraEntrega ) + this.stockSeguridad - this.stockActual);
         }
     }
 
-    public int calcularPuntoPedido(int demoraEntrega) {
-        // lote fijo
-        // demandadiaria * tiempoEntrega + stockSeguridad
+    public void calcularPuntoPedido(int demoraEntrega) {
         this.puntoPedido = (int) (this.demandaArticulo * demoraEntrega + this.stockSeguridad);
     }
 

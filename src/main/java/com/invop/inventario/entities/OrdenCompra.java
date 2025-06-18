@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
-import java.util.List;
+
 
 @Data
 @NoArgsConstructor
@@ -34,7 +34,7 @@ public class OrdenCompra {
     private EstadoOrden estadoOrden;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DetalleOrden> detalles;
+    private Articulo articulo;
 
     @Column(name = "monto_total")
     private float montoTotal;
