@@ -55,6 +55,10 @@ public class VentaService {
         articulo.setStockActual(articulo.getStockActual() - venta.getCantidad());
         articuloRepository.save(articulo);
 
+        // Calcular y setear montoTotal de la venta
+        float montoVenta = venta.getCantidad() * articulo.getCostoVenta();
+        venta.setMontoTotal(montoVenta);
+
         // Obtener ProveedorArticulo para el proveedor predeterminado
         if (articulo.getProveedorPredeterminado() != null) {
             ProveedorArticulo proveedorArticulo = proveedorArticuloRepository
@@ -72,12 +76,18 @@ public class VentaService {
                 OrdenCompra orden = new OrdenCompra();
                 orden.setArticulo(articulo);
                 orden.setProveedor(articulo.getProveedorPredeterminado());
-                orden.setFechaCreacionOrdenCompra(LocalDate.now());
+                orden.setCantidad(articulo.getLoteOptimo());
                 orden.setEstadoOrden(EstadoOrden.PENDIENTE);
+                orden.setFechaCreacionOrdenCompra(LocalDate.now());
+                // Calcular y setear montoTotal de la orden de compra usando precioUnitario de ProveedorArticulo
+                float montoOrden = articulo.getLoteOptimo() * proveedorArticulo.getPrecioUnitario();
+                orden.setMontoTotal(montoOrden);
+
                 ordenCompraRepository.save(orden);
             }
         }
 
+        venta.setArticulo(articulo);
         venta.setFechaVenta(new Date());
         return ventaRepository.save(venta);
     }
@@ -87,7 +97,11 @@ public class VentaService {
         Venta venta = ventaRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Venta no encontrada"));
 
-        venta.setCantidad(ventaDetails.getCantidad());
+        Articulo articulo = articuloRepository.findById(ventaDetails.getArticulo().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Artículo no encontrado"));
+
+        venta.setArticulo(articulo); // Asegura que el artículo es el correcto de la base de datos
+        venta.setCantidad(venta.getCantidad()); // Ya viene del request, pero puedes dejarlo explícito
         venta.setMontoTotal(ventaDetails.getMontoTotal());
         // No se recomienda cambiar el artículo ni la fecha de venta en una actualización normal
 
