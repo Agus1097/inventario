@@ -30,8 +30,9 @@ public class ArticuloService {
     @Autowired
     private OrdenCompraRepository ordenCompraRepository;
 
-    public List<Articulo> findAll() {
-        return articuloRepository.findByFechaBajaArticuloIsNull();
+    public Page<Articulo> findAll(int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        return articuloRepository.findByFechaBajaArticuloIsNull(pageable);
     }
 
     @Transactional

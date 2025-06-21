@@ -2,6 +2,8 @@ package com.invop.inventario.repositories;
 
 import com.invop.inventario.entities.Articulo;
 import com.invop.inventario.entities.Proveedor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -22,5 +24,6 @@ public interface ArticuloRepository extends JpaRepository<Articulo, Long> {
     // Artículos faltantes: stockActual <= stockSeguridad
     List<Articulo> findByStockActualLessThanEqual(int stockSeguridad);
 
-    List<Articulo> findByFechaBajaArticuloIsNull();
+
+    Page<Articulo> findByFechaBajaArticuloIsNull(Pageable pageable);
 }
