@@ -2,6 +2,7 @@ package com.invop.inventario.services;
 
 
 import com.invop.inventario.entities.Articulo;
+import com.invop.inventario.entities.EstadoOrden;
 import com.invop.inventario.entities.Proveedor;
 import com.invop.inventario.entities.ProveedorArticulo;
 import com.invop.inventario.repositories.ArticuloRepository;
@@ -129,9 +130,12 @@ public class ArticuloService {
             throw new IllegalArgumentException("El artículo tiene unidades en stock, no puede ser dado de baja");
         }
         // Verificar órdenes de compra pendientes o enviadas
-        boolean tieneOrdenesPendientesOEnviadas = ordenCompraRepository
-                .existsByArticuloAndEstadoIn(a, List.of("PENDIENTE", "ENVIADO"));
-        if (tieneOrdenesPendientesOEnviadas) {
+        boolean tieneOrdenPendienteOEnviada = ordenCompraRepository
+                .existsByArticuloAndEstadoOrdenIn(
+                        a,
+                        List.of(EstadoOrden.PENDIENTE, EstadoOrden.ENVIADO)
+                );
+        if (tieneOrdenPendienteOEnviada) {
             throw new IllegalArgumentException("El artículo tiene órdenes de compra pendientes o enviadas y no puede ser dado de baja");
         }
         a.setFechaBajaArticulo(LocalDate.now());

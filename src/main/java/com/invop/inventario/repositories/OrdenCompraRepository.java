@@ -16,11 +16,11 @@ public interface OrdenCompraRepository extends JpaRepository <OrdenCompra, Long>
 
     boolean existsByProveedor_IdAndEstadoOrden(Long proveedorId, EstadoOrden estado);
 
-    boolean existsByArticuloAndEstadoIn(Articulo articulo, List<String> estados);
+    boolean existsByArticuloAndEstadoOrdenIn(Articulo articulo, List<EstadoOrden> estados);
 
-    boolean existsByProveedorAndEstadoIn(Proveedor proveedor, List<String> estados);
+    boolean existsByProveedorAndEstadoOrdenIn(Proveedor proveedor, List<EstadoOrden> estados);
 
-    boolean existsByProveedorPredeterminado(Proveedor proveedor);
+    //boolean existsByProveedorPredeterminado(Proveedor proveedor);
 
     List<OrdenCompra> findByArticulo(Articulo articulo);
 }

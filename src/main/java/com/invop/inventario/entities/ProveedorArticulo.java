@@ -18,6 +18,10 @@ public class ProveedorArticulo {
     @Column(name = "precio_unitario")
     private float precioUnitario;
 
+    @ManyToOne
+    @JoinColumn(name = "id_proveedor")
+    private Proveedor proveedor;
+
     @Column(name = "cargos_pedido")
     private float cargosPedido;
 

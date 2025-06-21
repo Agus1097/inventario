@@ -69,7 +69,10 @@ public class VentaService {
             boolean stockEsMenorOIgualPuntoPedido = articulo.getStockActual() <= articulo.getPuntoPedido();
 
             boolean tieneOrdenPendienteOEnviada = ordenCompraRepository
-                    .existsByArticuloAndEstadoIn(articulo, List.of("PENDIENTE", "ENVIADA"));
+                    .existsByArticuloAndEstadoOrdenIn(
+                            articulo,
+                            List.of(EstadoOrden.PENDIENTE, EstadoOrden.ENVIADO)
+                    );
 
             if (esLoteFijo && stockEsMenorOIgualPuntoPedido && !tieneOrdenPendienteOEnviada) {
                 OrdenCompra orden = new OrdenCompra();

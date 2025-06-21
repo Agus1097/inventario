@@ -1,6 +1,7 @@
 package com.invop.inventario.services;
 
 import com.invop.inventario.entities.Articulo;
+import com.invop.inventario.entities.EstadoOrden;
 import com.invop.inventario.entities.Proveedor;
 import com.invop.inventario.entities.ProveedorArticulo;
 import com.invop.inventario.repositories.ArticuloRepository;
@@ -154,8 +155,8 @@ public class ProveedorService {
                 .orElseThrow(() -> new EntityNotFoundException("Proveedor no encontrado"));
 
         // Verificar que no tenga órdenes de compra en estado pendiente o enviada
-        boolean tieneOrdenes = ordenCompraRepository.existsByProveedorAndEstadoIn(
-                proveedor, List.of("PENDIENTE", "ENVIADO")
+        boolean tieneOrdenes = ordenCompraRepository.existsByProveedorAndEstadoOrdenIn(
+                proveedor, List.of(EstadoOrden.PENDIENTE, EstadoOrden.ENVIADO)
         );
         if (tieneOrdenes) {
             throw new IllegalArgumentException("El proveedor tiene órdenes de compra pendientes o enviadas y no puede ser dado de baja.");

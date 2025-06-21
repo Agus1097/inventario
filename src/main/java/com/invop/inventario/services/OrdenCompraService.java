@@ -46,8 +46,9 @@ public class OrdenCompraService {
                 .orElseThrow(() -> new EntityNotFoundException("Proveedor no encontrado"));
 
         // Verificar si ya existe una orden pendiente o enviada para este artículo
-        boolean existeOrden = ordenCompraRepository.existsByArticuloAndEstadoIn(
-                articulo, List.of("PENDIENTE", "ENVIADA")
+        boolean existeOrden = ordenCompraRepository.existsByArticuloAndEstadoOrdenIn(
+                articulo,
+                List.of(EstadoOrden.PENDIENTE, EstadoOrden.ENVIADO)
         );
         if (existeOrden) {
             throw new IllegalArgumentException("Ya existe una orden de compra pendiente o enviada para este artículo.");
