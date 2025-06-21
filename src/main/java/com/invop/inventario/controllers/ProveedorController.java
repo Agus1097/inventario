@@ -11,6 +11,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/proveedores")
+@CrossOrigin(origins = "http://localhost:5173")
 public class ProveedorController {
 
     @Autowired
