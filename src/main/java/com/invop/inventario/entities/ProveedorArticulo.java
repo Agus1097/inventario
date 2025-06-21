@@ -28,8 +28,8 @@ public class ProveedorArticulo {
     @Column(name = "tiempo_revision")
     private float tiempoRevision;
 
-    @ManyToOne
-    @JoinColumn(name = "id_tipo_modelo")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_modelo")
     private TipoModelo tipoModelo;
 
 }

@@ -32,7 +32,8 @@ public class OrdenCompra {
     @Enumerated(EnumType.STRING)
     private EstadoOrden estadoOrden;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToOne
+    @JoinColumn(name = "id_articulo")
     private Articulo articulo;
 
     @Column(name = "monto_total")

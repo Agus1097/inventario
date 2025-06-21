@@ -61,9 +61,6 @@ public class Articulo {
     @Column(name = "desviacion_estandar")
     private float desviacionEstandar;
 
-    @Column(name = "produccion_diaria")
-    private int producciondiaria;
-
     @ManyToOne
     @JoinColumn(name = "id_proveedor_predeterminado")
     private Proveedor proveedorPredeterminado;

@@ -17,8 +17,7 @@ public interface ArticuloRepository extends JpaRepository<Articulo, Long> {
     boolean existsByProveedorPredeterminado(Proveedor proveedorPredeterminado);
 
     // Artículos a reponer: stockActual <= puntoPedido y que NO tengan orden de compra pendiente o enviada
-    @Query("SELECT a FROM Articulo a WHERE a.stockActual <= a.puntoPedido AND " +
-           "NOT EXISTS (SELECT oc FROM OrdenCompra oc WHERE oc.articulo = a AND oc.estado IN ('PENDIENTE', 'ENVIADA'))")
+    @Query("SELECT a FROM Articulo a WHERE a.stockActual <= a.puntoPedido AND NOT EXISTS (SELECT oc FROM OrdenCompra oc WHERE oc.articulo = a AND oc.estadoOrden IN ('PENDIENTE', 'ENVIADO'))")
     List<Articulo> findArticulosAReponer();
 
     // Artículos faltantes: stockActual <= stockSeguridad
