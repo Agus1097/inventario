@@ -16,4 +16,6 @@ public interface OrdenCompraRepository extends JpaRepository <OrdenCompra, Long>
     boolean existsByProveedor_IdAndEstadoOrden(Long proveedorId, EstadoOrden estado);
 
     boolean existsByArticuloAndEstadoIn(Articulo articulo, List<String> estados);
+
+    List<OrdenCompra> findByArticulo(Articulo articulo);
 }

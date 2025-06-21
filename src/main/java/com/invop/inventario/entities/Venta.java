@@ -14,7 +14,7 @@ public class Venta {
     private Long id;
 
     @Column(name = "fecha_venta")
-    @Temporal(TemporalType.TIMESTAMP) // Opcional, especifica el tipo de fecha
+    @Temporal(TemporalType.TIMESTAMP)
     private Date fechaVenta;
 
     @ManyToOne

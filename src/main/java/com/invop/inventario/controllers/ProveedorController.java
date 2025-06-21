@@ -1,23 +1,16 @@
 package com.invop.inventario.controllers;
 
-import com.invop.inventario.dto.ArticuloDTO;
+
 import com.invop.inventario.dto.ProveedorDTO;
-import com.invop.inventario.entities.Articulo;
 import com.invop.inventario.entities.Proveedor;
 import com.invop.inventario.mappers.ProveedorMapper;
 import com.invop.inventario.repositories.ProveedorRepository;
 import com.invop.inventario.services.ProveedorService;
-import org.hibernate.procedure.ProcedureOutputs;
-import org.hibernate.query.criteria.JpaRoot;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/proveedor")

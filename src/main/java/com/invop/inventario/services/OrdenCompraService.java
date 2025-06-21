@@ -1,132 +1,140 @@
 package com.invop.inventario.services;
 
-import com.invop.inventario.dtos.OrdenCompraArticuloDTO;
-import com.invop.inventario.dtos.OrdenCompraCreatedDTO;
-import com.invop.inventario.dtos.OrdenCompraUpdateDTO;
 import com.invop.inventario.entities.Articulo;
 import com.invop.inventario.entities.EstadoOrden;
 import com.invop.inventario.entities.OrdenCompra;
+import com.invop.inventario.entities.Proveedor;
+import com.invop.inventario.entities.ProveedorArticulo;
+import com.invop.inventario.repositories.ArticuloRepository;
 import com.invop.inventario.repositories.OrdenCompraRepository;
+import com.invop.inventario.repositories.ProveedorArticuloRepository;
+import com.invop.inventario.repositories.ProveedorRepository;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class OrdenCompraService {
 
-    private final OrdenCompraRepository ordenCompraRepository;
-    private final ArticuloService articuloService;
+    @Autowired
+    private OrdenCompraRepository ordenCompraRepository;
+    @Autowired
+    private ArticuloRepository articuloRepository;
+    @Autowired
+    private ProveedorRepository proveedorRepository;
+    @Autowired
+    private ProveedorArticuloRepository proveedorArticuloRepository;
 
-    public OrdenCompra ordenComprafindById(Long id) {
-        return ordenCompraRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Orden de compra no encontrada"));
+    public List<OrdenCompra> findAll() {
+        return ordenCompraRepository.findAll();
     }
 
-    //TODO: VER LO DEL PROVEEDOR DETEMINADO Y LOTE
+    public OrdenCompra findById(Long id) {
+        return ordenCompraRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Orden de compra no encontrada"));
+    }
+
     @Transactional
-    public OrdenCompraCreatedDTO createOrdenCompra(List<OrdenCompraArticuloDTO> ordenCompraArticuloDTOS) {
-        List<DetalleOrden> detalleOrdenes = new ArrayList<>();
-        float montoTotal = 0;
+    public OrdenCompra saveOrdenCompra(OrdenCompra ordenCompra) {
+        Articulo articulo = articuloRepository.findById(ordenCompra.getArticulo().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Artículo no encontrado"));
+        Proveedor proveedor = proveedorRepository.findById(ordenCompra.getProveedor().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Proveedor no encontrado"));
 
-        OrdenCompra ordenCompra = OrdenCompra.builder()
-                .estadoOrden(EstadoOrden.PENDIENTE)
-                .build();
-
-        for (OrdenCompraArticuloDTO dto : ordenCompraArticuloDTOS) {
-            Articulo articulo = articuloService.findById(dto.getCodArticulo());
-            float precioUnitario = getPrecioUnitario(articulo);
-
-            DetalleOrden detalleOrden = DetalleOrden.builder()
-                    .ordenCompra(ordenCompra) // <- clave
-                    .articulo(articulo)
-                    .cantidadArticulo(dto.getCantidadArticulo())
-                    .precioUnitario(precioUnitario)
-                    .precioTotal(precioUnitario * dto.getCantidadArticulo())
-                    .build();
-
-            montoTotal += detalleOrden.getPrecioTotal();
-            detalleOrdenes.add(detalleOrden);
+        // Verificar si ya existe una orden pendiente o enviada para este artículo
+        boolean existeOrden = ordenCompraRepository.existsByArticuloAndEstadoIn(
+                articulo, List.of("PENDIENTE", "ENVIADA")
+        );
+        if (existeOrden) {
+            throw new IllegalArgumentException("Ya existe una orden de compra pendiente o enviada para este artículo.");
         }
 
-        ordenCompra.setDetalles(detalleOrdenes);
+        ordenCompra.setArticulo(articulo);
+        ordenCompra.setProveedor(proveedor);
+        ordenCompra.setFechaCreacionOrdenCompra(LocalDate.now());
+        ordenCompra.setEstadoOrden(EstadoOrden.PENDIENTE);
+
+        // Obtener ProveedorArticulo y calcular montoTotal
+        ProveedorArticulo proveedorArticulo = proveedorArticuloRepository
+                .findByArticuloAndProveedor(articulo, proveedor)
+                .orElseThrow(() -> new EntityNotFoundException("No existe relación Proveedor-Articulo para este artículo y proveedor"));
+
+        float montoTotal = ordenCompra.getCantidad() * proveedorArticulo.getPrecioUnitario();
         ordenCompra.setMontoTotal(montoTotal);
-
-        Long ordenCompraId = ordenCompraRepository.save(ordenCompra).getId();
-
-        return OrdenCompraCreatedDTO.builder()
-                .ordenCompraId(ordenCompraId)
-                .build();
-    }
-
-    //TODO: IMPLEMENTAR MAPSTRUCT Y DEVOLVER UN DTO
-    @Transactional
-    public OrdenCompra updateOrdenCompra(OrdenCompraUpdateDTO ordenCompraUpdateDTO) {
-
-        OrdenCompra ordenCompra = ordenComprafindById(ordenCompraUpdateDTO.getOrdenCompraId());
-        if (!ordenCompra.getEstadoOrden().equals(EstadoOrden.PENDIENTE)) {
-            throw new RuntimeException("No se puede actualizar orden compra porque no tiene estado pendiente");
-        }
-
-        Map<Long, OrdenCompraArticuloDTO> articulosDTOMap = ordenCompraUpdateDTO.getDetalles().stream()
-                .collect(Collectors.toMap(OrdenCompraArticuloDTO::getCodArticulo, Function.identity()));
-
-        ordenCompra.getDetalles().forEach(detalleOrden -> {
-            Long codArticulo = detalleOrden.getArticulo().getCodArticulo();
-            OrdenCompraArticuloDTO dto = articulosDTOMap.get(codArticulo);
-
-            if (dto != null) {
-                detalleOrden.setCantidadArticulo(dto.getCantidadArticulo());
-            } else {
-                detalleOrden.setFechaBaja(LocalDateTime.now());
-            }
-        });
 
         return ordenCompraRepository.save(ordenCompra);
     }
 
-    //TODO: PROBABLEMENTE HAY QUE MODIFICAR LA LOGICA
-    public void confirmOrdenCompra(Long ordenCompraId) {
-        OrdenCompra ordenCompra = ordenComprafindById(ordenCompraId);
-        if (!ordenCompra.getEstadoOrden().equals(EstadoOrden.PENDIENTE)) {
-            throw new RuntimeException("No se puede confirmar orden compra porque no tiene estado pendiente");
+    @Transactional
+    public OrdenCompra updateOrdenCompra(Long id, OrdenCompra ordenCompraDetails) {
+        OrdenCompra ordenCompra = ordenCompraRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Orden de compra no encontrada"));
+
+        EstadoOrden estadoActual = ordenCompra.getEstadoOrden();
+        EstadoOrden nuevoEstado = ordenCompraDetails.getEstadoOrden();
+
+        // Solo se puede editar la cantidad si la orden está en estado pendiente
+        if (EstadoOrden.PENDIENTE.equals(estadoActual)) {
+            if (ordenCompraDetails.getCantidad() != ordenCompra.getCantidad()) {
+                // Recalcular montoTotal usando precioUnitario de ProveedorArticulo
+                ProveedorArticulo proveedorArticulo = proveedorArticuloRepository
+                        .findByArticuloAndProveedor(ordenCompra.getArticulo(), ordenCompra.getProveedor())
+                        .orElseThrow(() -> new EntityNotFoundException("No existe relación Proveedor-Articulo para este artículo y proveedor"));
+                ordenCompra.setCantidad(ordenCompraDetails.getCantidad());
+                float montoTotal = ordenCompra.getCantidad() * proveedorArticulo.getPrecioUnitario();
+                ordenCompra.setMontoTotal(montoTotal);
+            }
+            // Permitir pasar a estado cancelado
+            if (EstadoOrden.CANCELADO.equals(nuevoEstado)) {
+                ordenCompra.setEstadoOrden(EstadoOrden.CANCELADO);
+            }
+            // Permitir pasar a estado enviada
+            else if (EstadoOrden.ENVIADO.equals(nuevoEstado)) {
+                ordenCompra.setEstadoOrden(EstadoOrden.ENVIADO);
+            }
+        } else if (EstadoOrden.ENVIADO.equals(estadoActual)) {
+            // No se puede modificar cantidad ni cancelar
+            if (ordenCompraDetails.getCantidad() != ordenCompra.getCantidad()) {
+                throw new IllegalArgumentException("No se puede modificar la cantidad de una orden enviada.");
+            }
+            if (EstadoOrden.CANCELADO.equals(nuevoEstado)) {
+                throw new IllegalArgumentException("No se puede cancelar una orden enviada.");
+            }
+            // Permitir pasar a estado finalizada
+            if (EstadoOrden.FINALIZADO.equals(nuevoEstado)) {
+                ordenCompra.setEstadoOrden(EstadoOrden.FINALIZADO);
+                // Actualizar stockActual del artículo
+                Articulo articulo = articuloRepository.findById(ordenCompra.getArticulo().getId())
+                                                    .orElseThrow(() -> new EntityNotFoundException("Artículo no encontrado"));
+                articulo.setStockActual(articulo.getStockActual() + ordenCompra.getCantidad());
+                articuloRepository.save(articulo);
+
+                // Informar si el stockActual no supera el puntoPedido
+                if (articulo.getStockActual() <= articulo.getPuntoPedido()) {
+                    // Aquí puedes lanzar una excepción, retornar un mensaje, o registrar un aviso según tu arquitectura
+                    // Ejemplo: lanzar excepción con mensaje informativo
+                    throw new IllegalStateException("El stock actual del artículo sigue siendo igual o menor al punto de pedido.");
+                }
+            }
+        } else if (EstadoOrden.FINALIZADO.equals(estadoActual) || EstadoOrden.CANCELADO.equals(estadoActual)) {
+            throw new IllegalArgumentException("No se puede modificar una orden finalizada o cancelada.");
         }
 
-        ordenCompra.setEstadoOrden(EstadoOrden.ENVIADO);
-        List<Long> articulosIds = ordenCompra.getDetalles().stream().map(s -> s.getArticulo().getCodArticulo()).toList();
-        Map<Long, Integer> mapArticuloCantidad = ordenCompra.getDetalles()
-                .stream()
-                .filter(detalle -> detalle.getArticulo() != null && detalle.getArticulo().getCodArticulo() != null)
-                .collect(Collectors.toMap(
-                        detalle -> detalle.getArticulo().getCodArticulo(),
-                        DetalleOrden::getCantidadArticulo
-                ));
-
-        for (Long articuloId : articulosIds) {
-            int cantidadArticulo = mapArticuloCantidad.get(articuloId);
-            Articulo articulo = articuloService.findById(articuloId);
-            articulo.setStockActual(articulo.getStockActual() + cantidadArticulo);
-            articuloService.saveArticulo(articulo);
-        }
+        return ordenCompraRepository.save(ordenCompra);
     }
 
-    public void cancelOrdenCompra(Long ordenCompraId) {
-        OrdenCompra ordenCompra = ordenComprafindById(ordenCompraId);
-        if (!ordenCompra.getEstadoOrden().equals(EstadoOrden.PENDIENTE)) {
-            throw new RuntimeException("No se puede cancelar orden compra porque no tiene estado pendiente");
-        }
-        ordenCompra.setEstadoOrden(EstadoOrden.CANCELADO);
-        ordenCompraRepository.save(ordenCompra);
+    @Transactional
+    public void deleteById(Long id) {
+        ordenCompraRepository.deleteById(id);
     }
 
-    private float getPrecioUnitario(Articulo articulo) {
-        return articulo.getCostoCompra() + articulo.getCostoAlmacenamiento() + articulo.getCostoPedido();
+    public List<OrdenCompra> findByArticulo(Long articuloId) {
+        Articulo articulo = articuloRepository.findById(articuloId)
+                .orElseThrow(() -> new EntityNotFoundException("Artículo no encontrado"));
+        return ordenCompraRepository.findByArticulo(articulo);
     }
 }

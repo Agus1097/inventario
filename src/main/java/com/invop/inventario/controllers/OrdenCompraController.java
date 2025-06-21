@@ -1,43 +1,48 @@
 package com.invop.inventario.controllers;
 
-import com.invop.inventario.dtos.OrdenCompraArticuloDTO;
-import com.invop.inventario.dtos.OrdenCompraCreatedDTO;
-import com.invop.inventario.dtos.OrdenCompraUpdateDTO;
 import com.invop.inventario.entities.OrdenCompra;
 import com.invop.inventario.services.OrdenCompraService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 @RestController
-@RequestMapping("/ordenCompra")
+@RequestMapping("/orden-compra")
 public class OrdenCompraController {
 
-    private final OrdenCompraService ordenCompraService;
+    @Autowired
+    private OrdenCompraService ordenCompraService;
+
+    @GetMapping
+    public List<OrdenCompra> getAll() {
+        return ordenCompraService.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<OrdenCompra> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(ordenCompraService.findById(id));
+    }
 
     @PostMapping
-    public ResponseEntity<OrdenCompraCreatedDTO> createOrdenCompra(@RequestBody List<OrdenCompraArticuloDTO> dto) {
-        return new ResponseEntity<>(ordenCompraService.createOrdenCompra(dto), HttpStatus.CREATED);
+    public ResponseEntity<OrdenCompra> create(@RequestBody OrdenCompra ordenCompra) {
+        return ResponseEntity.ok(ordenCompraService.saveOrdenCompra(ordenCompra));
     }
 
-    @PutMapping
-    public ResponseEntity<OrdenCompra> updateOrdenCompra(@RequestBody OrdenCompraUpdateDTO dto) {
-        return ResponseEntity.ok(ordenCompraService.updateOrdenCompra(dto));
+    @PutMapping("/{id}")
+    public ResponseEntity<OrdenCompra> update(@PathVariable Long id, @RequestBody OrdenCompra ordenCompra) {
+        return ResponseEntity.ok(ordenCompraService.updateOrdenCompra(id, ordenCompra));
     }
 
-    @PutMapping("/{ordenCompraId}/confimar")
-    public ResponseEntity<?> confirmOrdenCompra(@PathVariable Long ordenCompraId) {
-        ordenCompraService.confirmOrdenCompra(ordenCompraId);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        ordenCompraService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("{ordenCompraId}/cancelar")
-    public ResponseEntity<?> cancelOrdenCompra(@PathVariable Long ordenCompraId) {
-        ordenCompraService.cancelOrdenCompra(ordenCompraId);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @GetMapping("/articulo/{articuloId}")
+    public List<OrdenCompra> getByArticulo(@PathVariable Long articuloId) {
+        return ordenCompraService.findByArticulo(articuloId);
     }
 }
