@@ -13,4 +13,6 @@ public interface ProveedorRepository extends JpaRepository<Proveedor, Long> {
     Optional<Proveedor> findById(Long id);
 
     Long id(Long id);
+
+    List<Proveedor> findByFechaBajaProveedorIsNull();
 }

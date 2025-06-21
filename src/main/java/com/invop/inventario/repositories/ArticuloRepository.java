@@ -21,4 +21,6 @@ public interface ArticuloRepository extends JpaRepository<Articulo, Long> {
 
     // Artículos faltantes: stockActual <= stockSeguridad
     List<Articulo> findByStockActualLessThanEqual(int stockSeguridad);
+
+    List<Articulo> findByFechaBajaArticuloIsNull();
 }

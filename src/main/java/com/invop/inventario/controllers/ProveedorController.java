@@ -1,91 +1,49 @@
 package com.invop.inventario.controllers;
 
-
-import com.invop.inventario.dto.ProveedorDTO;
 import com.invop.inventario.entities.Proveedor;
-import com.invop.inventario.mappers.ProveedorMapper;
-import com.invop.inventario.repositories.ProveedorRepository;
 import com.invop.inventario.services.ProveedorService;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/proveedor")
+@RequestMapping("/proveedores")
 public class ProveedorController {
 
-    private final ProveedorRepository proveedorRepository;
+    @Autowired
     private ProveedorService proveedorService;
-    private ProveedorMapper proveedorMapper;
-
-    public ProveedorController(ProveedorRepository proveedorRepository) {
-        this.proveedorRepository = proveedorRepository;
-    }
 
     @GetMapping
-    public ResponseEntity<List<ProveedorDTO>> getAll() {
-
-        List<Proveedor> proveedores = proveedorService.findAll();
-        List<ProveedorDTO> dtos = proveedorMapper.toDtoList(proveedores);
-
-        if (proveedores.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.ok(dtos);
-        }
-    }
-
-    @PostMapping
-    public ResponseEntity<?> create(@RequestBody ProveedorDTO proveedorDTO) {
-        try{
-            if ( proveedorDTO.getArticulosProveedor().isEmpty() ) {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("Necesita almenos un articulo asociado, para darse de alta como proveedor");
-            }
-
-            Proveedor proveedor = proveedorMapper.toEntity(proveedorDTO);
-            ProveedorDTO savedProveedorDTO = proveedorMapper.toDto(proveedor);
-
-            proveedorService.save(proveedor);
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedProveedorDTO);
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("Error al dar de alta un proveedor" + e.getMessage());
-        }
-
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
-        try {
-            if (proveedorService.isDeletable(id)){
-                proveedorService.darBajaProveedor(id);
-                return ResponseEntity.ok().body("Proveedor con id " + id + " dado de baja correctamente");
-            } else {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("No se puede dar de baja proveedores determinados o con ordenes de compra pendiente o en curso");
-            }
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("Error dar de baja un proveedor " + e.getMessage());
-        }
+    public List<Proveedor> getAll() {
+        return proveedorService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> mostrarArticulos(@PathVariable Long id) {
-        try {
-
-            return ResponseEntity.ok().body(proveedorService.listarArticulos(id));
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("Error al listar los articulo de un proveedor" + e.getMessage());
-        }
+    public ResponseEntity<Proveedor> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(proveedorService.findById(id));
     }
 
+    @PostMapping
+    public ResponseEntity<Proveedor> create(@RequestBody Proveedor proveedor) {
+        return ResponseEntity.ok(proveedorService.saveProveedor(proveedor));
+    }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Proveedor> update(@PathVariable Long id, @RequestBody Proveedor proveedor) {
+        return ResponseEntity.ok(proveedorService.updateProveedor(id, proveedor));
+    }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        proveedorService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{proveedorId}/articulos")
+    public List<Map<String, Object>> getArticulosPorProveedor(@PathVariable Long proveedorId) {
+        return proveedorService.getArticulosPorProveedor(proveedorId);
+    }
 }

@@ -30,9 +30,8 @@ public class ArticuloService {
     @Autowired
     private OrdenCompraRepository ordenCompraRepository;
 
-    public Page<Articulo> findAll(int page, int pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize);
-        return articuloRepository.findAll(pageable);
+    public List<Articulo> findAll() {
+        return articuloRepository.findByFechaBajaArticuloIsNull();
     }
 
     @Transactional
@@ -53,8 +52,12 @@ public class ArticuloService {
     }
 
     public Articulo findById(Long id) {
-        return articuloRepository.findById(id)
+        Articulo articulo = articuloRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("El artículo no existe"));
+        if (articulo.getFechaBajaArticulo() != null) {
+            throw new IllegalArgumentException("El artículo está dado de baja.");
+        }
+        return articulo;
     }
 
     @Transactional
@@ -126,7 +129,7 @@ public class ArticuloService {
         }
         // Verificar órdenes de compra pendientes o enviadas
         boolean tieneOrdenesPendientesOEnviadas = ordenCompraRepository
-                .existsByArticuloAndEstadoIn(a, List.of("PENDIENTE", "ENVIADA"));
+                .existsByArticuloAndEstadoIn(a, List.of("PENDIENTE", "ENVIADO"));
         if (tieneOrdenesPendientesOEnviadas) {
             throw new IllegalArgumentException("El artículo tiene órdenes de compra pendientes o enviadas y no puede ser dado de baja");
         }
