@@ -43,10 +43,10 @@ public class ProveedorController {
         return ResponseEntity.ok(proveedorService.updateProveedor(id, proveedor));
     }
 
-    @DeleteMapping("/{id}")
+    @PutMapping("/baja/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         proveedorService.deleteById(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{proveedorId}/articulos")

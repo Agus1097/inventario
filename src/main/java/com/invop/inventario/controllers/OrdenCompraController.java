@@ -1,6 +1,8 @@
 package com.invop.inventario.controllers;
 
+import com.invop.inventario.dto.OrdenCompraDTO;
 import com.invop.inventario.entities.OrdenCompra;
+import com.invop.inventario.mappers.OrdenCompraMapper;
 import com.invop.inventario.services.OrdenCompraService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,24 +18,27 @@ public class OrdenCompraController {
     @Autowired
     private OrdenCompraService ordenCompraService;
 
+    @Autowired
+    private OrdenCompraMapper ordenCompraMapper;
+
     @GetMapping
     public List<OrdenCompra> getAll() {
         return ordenCompraService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrdenCompra> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(ordenCompraService.findById(id));
+    public ResponseEntity<OrdenCompraDTO> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(ordenCompraMapper.toDto(ordenCompraService.findById(id)));
     }
 
     @PostMapping
-    public ResponseEntity<OrdenCompra> create(@RequestBody OrdenCompra ordenCompra) {
-        return ResponseEntity.ok(ordenCompraService.saveOrdenCompra(ordenCompra));
+    public ResponseEntity<OrdenCompraDTO> create(@RequestBody OrdenCompra ordenCompra) {
+        return ResponseEntity.ok( ordenCompraMapper.toDto(ordenCompraService.saveOrdenCompra(ordenCompra)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<OrdenCompra> update(@PathVariable Long id, @RequestBody OrdenCompra ordenCompra) {
-        return ResponseEntity.ok(ordenCompraService.updateOrdenCompra(id, ordenCompra));
+    public ResponseEntity<OrdenCompraDTO> update(@PathVariable Long id, @RequestBody OrdenCompra ordenCompra) {
+        return ResponseEntity.ok(ordenCompraMapper.toDto(ordenCompraService.updateOrdenCompra(id, ordenCompra)));
     }
 
     @DeleteMapping("/{id}")
@@ -43,7 +48,7 @@ public class OrdenCompraController {
     }
 
     @GetMapping("/articulo/{articuloId}")
-    public List<OrdenCompra> getByArticulo(@PathVariable Long articuloId) {
-        return ordenCompraService.findByArticulo(articuloId);
+    public List<OrdenCompraDTO> getByArticulo(@PathVariable Long articuloId) {
+        return ordenCompraMapper.toDtoList(ordenCompraService.findByArticulo(articuloId)) ;
     }
 }
