@@ -2,6 +2,7 @@ package com.invop.inventario.services;
 
 
 import com.invop.inventario.dto.ArticuloDTO;
+import com.invop.inventario.dto.ArticuloDatoDTO;
 import com.invop.inventario.dto.EditarArticuloDTO;
 import com.invop.inventario.entities.Articulo;
 import com.invop.inventario.entities.EstadoOrden;
@@ -36,6 +37,11 @@ public class ArticuloService {
     public Page<Articulo> findAll(int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
         return articuloRepository.findByFechaBajaArticuloIsNull(pageable);
+    }
+
+    public List<ArticuloDatoDTO> getAllArticuloDatoDTO() {
+        List<Articulo> articulos = articuloRepository.findAll();
+        return articuloMapper.toDtoList(articulos);
     }
 
     @Transactional

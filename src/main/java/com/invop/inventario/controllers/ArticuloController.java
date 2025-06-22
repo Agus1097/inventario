@@ -26,6 +26,11 @@ public class ArticuloController {
         return articuloService.findAll(page, size);
     }
 
+    @GetMapping("/a-asignar")
+    public List<ArticuloDatoDTO> getAllArticuloDatoDTO() {
+        return articuloService.getAllArticuloDatoDTO();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Articulo> getById(@PathVariable Long id) {
         return ResponseEntity.ok(articuloService.findById(id));
