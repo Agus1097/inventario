@@ -42,7 +42,7 @@ public class VentaService {
     }
 
     @Transactional
-    public Venta saveVenta(CrearVentaDTO dto) {
+    public void saveVenta(CrearVentaDTO dto) {
         System.out.println("DTO recibido: " + dto);
         Articulo articulo = articuloRepository.findById(dto.getArticuloId())
                 .orElseThrow(() -> new EntityNotFoundException("Artículo no encontrado"));
@@ -91,11 +91,11 @@ public class VentaService {
             }
         }
 
-        return ventaRepository.save(venta);
+        ventaRepository.save(venta);
     }
 
     @Transactional
-    public Venta updateVenta(Long id, Venta ventaDetails) {
+    public void updateVenta(Long id, Venta ventaDetails) {
         Venta venta = ventaRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Venta no encontrada"));
 
@@ -107,7 +107,7 @@ public class VentaService {
         venta.setMontoTotal(ventaDetails.getMontoTotal());
         // No se recomienda cambiar el artículo ni la fecha de venta en una actualización normal
 
-        return ventaRepository.save(venta);
+        ventaRepository.save(venta);
     }
 
     @Transactional
