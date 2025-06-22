@@ -3,6 +3,7 @@ package com.invop.inventario.controllers;
 import com.invop.inventario.dto.ArticuloDTO;
 import com.invop.inventario.dto.ArticuloDatoDTO;
 import com.invop.inventario.dto.EditarArticuloDTO;
+import com.invop.inventario.dto.ProveedorPredeterminadoDTO;
 import com.invop.inventario.services.ArticuloService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,8 +56,8 @@ public class ArticuloController {
     }
 
     @PutMapping("/{id}/proveedor-predeterminado")
-    public ResponseEntity<?> setProveedorPredeterminado(@PathVariable Long id, @RequestParam(required = false) Long proveedorId) {
-        articuloService.setProveedorPredeterminado(id, proveedorId);
+    public ResponseEntity<?> setProveedorPredeterminado(@PathVariable Long id, @RequestBody ProveedorPredeterminadoDTO dto) {
+        articuloService.setProveedorPredeterminado(id, dto.getProveedorId());
         return ResponseEntity.ok().build();
     }
 

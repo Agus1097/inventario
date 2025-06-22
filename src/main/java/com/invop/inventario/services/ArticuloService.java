@@ -127,6 +127,17 @@ public class ArticuloService {
             proveedor = null;
         }
 
+        ProveedorArticulo pa = proveedorArticuloRepository.findByArticuloAndProveedor(articulo, proveedor)
+                .orElseThrow(() -> new EntityNotFoundException("No existe relación Proveedor-Articulo para este artículo y proveedor"));
+
+        // Recalcular los valores del artículo
+
+        articulo.calcularLoteOptimo(pa.getCargosPedido(), pa.getTipoModelo(), pa.getDemoraEntrega(), pa.getTiempoRevision());
+            articulo.calcularStockSeguridad(pa.getDemoraEntrega(), pa.getTiempoRevision(), pa.getTipoModelo());
+            articulo.calcularPuntoPedido(pa.getDemoraEntrega());
+            articulo.calcularInventarioMaximo();
+            articulo.calcularCGI(pa.getPrecioUnitario(), pa.getCargosPedido());
+
         articulo.setProveedorPredeterminado(proveedor);
         articuloRepository.save(articulo);
     }

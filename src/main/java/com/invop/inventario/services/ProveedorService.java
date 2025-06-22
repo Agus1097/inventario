@@ -171,6 +171,7 @@ public class ProveedorService {
             Map<String, Object> info = new HashMap<>();
             // Datos del artículo
             info.put("articuloId", articulo.getId());
+            info.put("codArticulo", articulo.getCodArticulo());
             info.put("nombreArticulo", articulo.getNombre());
             info.put("descripcionArticulo", articulo.getDescripcion());
             // Datos de ProveedorArticulo

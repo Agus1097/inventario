@@ -1,11 +1,13 @@
 package com.invop.inventario.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 @Entity
 @Data
+@ToString(exclude = "proveedor")
 @Table(name = "proveedor_articulo")
 public class ProveedorArticulo {
 
