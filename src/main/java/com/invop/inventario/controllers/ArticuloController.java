@@ -50,13 +50,13 @@ public class ArticuloController {
     }
 
     @PutMapping("/baja/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<?> delete(@PathVariable Long id) {
         articuloService.deleteById(id);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}/proveedor-predeterminado")
-    public ResponseEntity<Articulo> setProveedorPredeterminado(@PathVariable Long id, @RequestParam(required = false) Long proveedorId) {
+    public ResponseEntity<?> setProveedorPredeterminado(@PathVariable Long id, @RequestParam(required = false) Long proveedorId) {
         articuloService.setProveedorPredeterminado(id, proveedorId);
         return ResponseEntity.ok().build();
     }

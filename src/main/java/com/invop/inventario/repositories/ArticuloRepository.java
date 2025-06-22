@@ -20,9 +20,5 @@ public interface ArticuloRepository extends JpaRepository<Articulo, Long> {
     @Query("SELECT a FROM Articulo a WHERE a.stockActual <= a.puntoPedido AND NOT EXISTS (SELECT oc FROM OrdenCompra oc WHERE oc.articulo = a AND oc.estadoOrden IN ('PENDIENTE', 'ENVIADO'))")
     List<Articulo> findArticulosAReponer();
 
-    // Artículos faltantes: stockActual <= stockSeguridad
-    List<Articulo> findByStockActualLessThanEqual(int stockSeguridad);
-
-
     Page<Articulo> findByFechaBajaArticuloIsNull(Pageable pageable);
 }
