@@ -1,33 +1,30 @@
 package com.invop.inventario.services;
 
+import com.invop.inventario.dto.ProveedorDTO;
 import com.invop.inventario.entities.Articulo;
 import com.invop.inventario.entities.EstadoOrden;
 import com.invop.inventario.entities.Proveedor;
 import com.invop.inventario.entities.ProveedorArticulo;
+import com.invop.inventario.mappers.ProveedorMapper;
 import com.invop.inventario.repositories.ArticuloRepository;
 import com.invop.inventario.repositories.OrdenCompraRepository;
 import com.invop.inventario.repositories.ProveedorRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
+@AllArgsConstructor
 public class ProveedorService {
 
-    @Autowired
-    private ProveedorRepository proveedorRepository;
-
-    @Autowired
-    private OrdenCompraRepository ordenCompraRepository;
-
-    @Autowired
-    private ArticuloRepository articuloRepository;
+    private final ProveedorRepository proveedorRepository;
+    private final OrdenCompraRepository ordenCompraRepository;
+    private final ArticuloRepository articuloRepository;
+    private final ProveedorMapper proveedorMapper;
+    private final ArticuloService articuloService;
 
     public List<Proveedor> findAll() {
         return proveedorRepository.findByFechaBajaProveedorIsNull();
@@ -43,42 +40,21 @@ public class ProveedorService {
     }
 
     @Transactional
-    public Proveedor saveProveedor(Proveedor proveedor) {
-        
-        if (proveedor.getNombre() == null || proveedor.getNombre().isBlank()) {
-            throw new IllegalArgumentException("El nombre del proveedor es obligatorio.");
-        }
+    public Proveedor saveProveedor(ProveedorDTO proveedorDTO) {
+        Proveedor proveedor = proveedorMapper.toEntity(proveedorDTO);
 
-        if (proveedor.getProveedorArticulos() == null || proveedor.getProveedorArticulos().isEmpty()) {
-            throw new IllegalArgumentException("Debe asociar al menos un Articulo al proveedor.");
-        }
+        for (ProveedorArticulo pa : proveedor.getProveedorArticulos()) {
+            Articulo articulo = articuloService.findById(pa.getArticulo().getId());
 
-        proveedor.getProveedorArticulos().forEach(pa -> {
-
-            if (pa.getArticulo() == null) {
-                throw new IllegalArgumentException("Cada ProveedorArticulo debe estar asociado a un Articulo.");
-            }
-            if (pa.getTipoModelo() == null) {
-                throw new IllegalArgumentException("Cada ProveedorArticulo debe tener un TipoModelo.");
-            }
-            if (pa.getDemoraEntrega() <= 0) {
-                throw new IllegalArgumentException("La demora de entrega debe ser mayor a 0.");
-            }
-            if (pa.getPrecioUnitario() <= 0) {
-                throw new IllegalArgumentException("El precio unitario debe ser mayor a 0.");
-            }
-            if (pa.getCargosPedido() < 0) {
-                throw new IllegalArgumentException("Los cargos de pedido no pueden ser negativos.");
-            }
-            if (pa.getTiempoRevision() <= 0) {
-                throw new IllegalArgumentException("El tiempo de revisión debe ser mayor a 0.");
-            }
-
-            Articulo articulo = pa.getArticulo();
-            if (articulo.getProveedorPredeterminado() == null) {
+            if (Objects.isNull(articulo.getProveedorPredeterminado())) {
                 articulo.setProveedorPredeterminado(proveedor);
+                articulo.calcularStockSeguridad(pa.getDemoraEntrega(), pa.getTiempoRevision(), pa.getTipoModelo());
+                articulo.calcularLoteOptimo(pa.getCargosPedido(), pa.getTipoModelo(), pa.getDemoraEntrega(), pa.getTiempoRevision());
+                articulo.calcularPuntoPedido(pa.getDemoraEntrega());
+                articulo.calcularInventarioMaximo();
+                articulo.calcularCGI(pa.getPrecioUnitario(), pa.getCargosPedido());
             }
-        });
+        }
 
         // Guardar proveedor y sus ProveedorArticulo en cascada
         return proveedorRepository.save(proveedor);
@@ -202,5 +178,9 @@ public class ProveedorService {
             resultado.add(info);
         }
         return resultado;
+    }
+
+    private void calcularProveedorPredeterminado(){
+
     }
 }

@@ -1,14 +1,10 @@
 package com.invop.inventario.dto;
 
-
-import com.invop.inventario.entities.ProveedorArticulo;
-import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -16,18 +12,8 @@ import java.util.List;
 @AllArgsConstructor
 public class ProveedorDTO {
 
+    @NotNull(message = "El nombre del proveedor no puede ser nulo")
+    private String nombre;
 
-        private Long id;
-
-        private BigDecimal costoAlmacenamiento;
-
-        private BigDecimal costoArticulo;
-
-        private String descripcionArticulo;
-
-        private int stockArticulo;
-
-        private List<ProveedorArticuloDTO> articulosProveedor = new ArrayList<>();
-
-
+    private List<ProveedorArticuloDTO> proveedorArticulos;
 }

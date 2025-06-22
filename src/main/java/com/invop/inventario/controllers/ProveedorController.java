@@ -1,5 +1,6 @@
 package com.invop.inventario.controllers;
 
+import com.invop.inventario.dto.ProveedorDTO;
 import com.invop.inventario.entities.Proveedor;
 import com.invop.inventario.services.ProveedorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +29,8 @@ public class ProveedorController {
     }
 
     @PostMapping
-    public ResponseEntity<Proveedor> create(@RequestBody Proveedor proveedor) {
-        return ResponseEntity.ok(proveedorService.saveProveedor(proveedor));
+    public ResponseEntity<Proveedor> create(@RequestBody ProveedorDTO proveedorDTO) {
+        return ResponseEntity.ok(proveedorService.saveProveedor(proveedorDTO));
     }
 
     @PutMapping("/{id}")

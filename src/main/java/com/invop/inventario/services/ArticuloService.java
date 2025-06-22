@@ -7,12 +7,13 @@ import com.invop.inventario.entities.Articulo;
 import com.invop.inventario.entities.EstadoOrden;
 import com.invop.inventario.entities.Proveedor;
 import com.invop.inventario.entities.ProveedorArticulo;
+import com.invop.inventario.mappers.ArticuloMapper;
 import com.invop.inventario.repositories.ArticuloRepository;
-import com.invop.inventario.repositories.ProveedorRepository;
-import com.invop.inventario.repositories.ProveedorArticuloRepository;
 import com.invop.inventario.repositories.OrdenCompraRepository;
+import com.invop.inventario.repositories.ProveedorArticuloRepository;
+import com.invop.inventario.repositories.ProveedorRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,15 +24,14 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class ArticuloService {
-    @Autowired
-    private ArticuloRepository articuloRepository;
-    @Autowired
-    private ProveedorRepository proveedorRepository;
-    @Autowired
-    private ProveedorArticuloRepository proveedorArticuloRepository;
-    @Autowired
-    private OrdenCompraRepository ordenCompraRepository;
+
+    private final ArticuloRepository articuloRepository;
+    private final ProveedorRepository proveedorRepository;
+    private final ProveedorArticuloRepository proveedorArticuloRepository;
+    private final OrdenCompraRepository ordenCompraRepository;
+    private final ArticuloMapper articuloMapper;
 
     public Page<Articulo> findAll(int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
@@ -39,19 +39,8 @@ public class ArticuloService {
     }
 
     @Transactional
-    public Articulo saveArticulo(Articulo articulo) {
-        if (articulo.getDescripcion() == null || articulo.getDescripcion().isBlank()) {
-            throw new IllegalArgumentException("La descripción del artículo no puede estar vacía");
-        }
-        if (articulo.getCodArticulo() == null) {
-            throw new IllegalArgumentException("El código del artículo no puede estar vacío");
-        }
-        if (articulo.getNombre() == null || articulo.getNombre().isBlank()) {
-            throw new IllegalArgumentException("El nombre del artículo no puede estar vacío");
-        }
-        if (articuloRepository.existsByCodArticulo(articulo.getCodArticulo())) {
-            throw new IllegalArgumentException("El artículo ya existe");
-        }
+    public Articulo saveArticulo(ArticuloDTO dto) {
+        Articulo articulo = articuloMapper.toEntityArticulo(dto);
         return articuloRepository.save(articulo);
     }
 
@@ -108,8 +97,8 @@ public class ArticuloService {
         }
 
         // Recalcular campos derivados
-        articulo.calcularLoteOptimo(cargosPedido, modeloInventario, demoraEntrega, tiempoRevision);
-        articulo.calcularStockSeguridad(demoraEntrega, tiempoRevision, modeloInventario);
+        //articulo.calcularLoteOptimo(cargosPedido, modeloInventario, demoraEntrega, tiempoRevision);
+        //articulo.calcularStockSeguridad(demoraEntrega, tiempoRevision, modeloInventario);
         articulo.calcularPuntoPedido(demoraEntrega);
         articulo.calcularInventarioMaximo();
         articulo.calcularCGI(precioUnitario, cargosPedido);

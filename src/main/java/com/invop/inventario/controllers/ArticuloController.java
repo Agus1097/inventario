@@ -1,6 +1,7 @@
 package com.invop.inventario.controllers;
 
 import com.invop.inventario.dto.ArticuloDTO;
+import com.invop.inventario.dto.ArticuloDatoDTO;
 import com.invop.inventario.dto.EditarArticuloDTO;
 import com.invop.inventario.entities.Articulo;
 import com.invop.inventario.services.ArticuloService;
@@ -27,25 +28,12 @@ public class ArticuloController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Articulo> getById(@PathVariable Long id) {
-        Articulo articulo = articuloService.findById(id);
-        return ResponseEntity.ok(articulo);
+        return ResponseEntity.ok(articuloService.findById(id));
     }
 
     @PostMapping
     public ResponseEntity<Articulo> create(@RequestBody ArticuloDTO dto) {
-        Articulo articulo = new Articulo();
-        articulo.setNombre(dto.getNombre());
-        articulo.setDescripcion(dto.getDescripcion());
-        articulo.setCodArticulo(dto.getCodigo());
-        articulo.setCostoAlmacenamiento(dto.getCostoAlmacenamiento());
-        articulo.setDemandaArticulo(dto.getDemanda());
-        articulo.setCostoVenta(dto.getCostoCompra()); // asumí esto
-        articulo.setStockActual(dto.getStockActual());
-        articulo.setCostoVenta(dto.getCostoVenta());
-        // El resto de los campos podrían calcularse o dejarse por defecto
-
-        Articulo creado = articuloService.saveArticulo(articulo);
-        return ResponseEntity.ok(creado);
+        return ResponseEntity.ok(articuloService.saveArticulo(dto));
     }
 
     @PutMapping("/{id}")

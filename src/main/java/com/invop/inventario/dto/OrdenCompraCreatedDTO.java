@@ -1,19 +1,15 @@
-package com.invop.inventario.dtos;
+package com.invop.inventario.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Builder
-public class OrdenCompraUpdateDTO {
+public class OrdenCompraCreatedDTO {
 
     @JsonProperty("orden_compra_id")
     private Long ordenCompraId;
-
-    private List<OrdenCompraArticuloDTO> detalles;
 }

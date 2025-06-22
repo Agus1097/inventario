@@ -27,7 +27,5 @@ public class Proveedor {
     private LocalDate fechaBajaProveedor;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "id_proveedor")
     private List<ProveedorArticulo> proveedorArticulos = new ArrayList<>();
-
 }

@@ -1,21 +1,27 @@
 package com.invop.inventario.mappers;
 
-
 import com.invop.inventario.dto.ProveedorArticuloDTO;
 import com.invop.inventario.dto.ProveedorDTO;
 import com.invop.inventario.entities.Proveedor;
 import com.invop.inventario.entities.ProveedorArticulo;
+import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 
 import java.util.List;
 
-
-@Mapper(componentModel = "spring")
+@Mapper(
+        componentModel = "spring",
+        uses = {
+                ArticuloMapper.class,
+        }, injectionStrategy = InjectionStrategy.CONSTRUCTOR
+)
 public interface ProveedorArticuloMapper {
 
-    ProveedorArticuloMapper toDto(Proveedor proveedor);
-    ProveedorArticuloDTO toEntity(Proveedor proveedor);
+    ProveedorArticuloDTO toDto(ProveedorArticulo proveedorArticulo);
 
-    List<ProveedorArticuloDTO> toDtoList(List<Proveedor> proveedor);
-    List<ProveedorArticulo> toEntityList(List<ProveedorDTO> dtos);
+    ProveedorArticulo toEntity(ProveedorArticuloDTO proveedorArticuloDTO);
+
+    List<ProveedorArticuloDTO> toDtoList(List<ProveedorArticulo> proveedorArticulos);
+
+    List<ProveedorArticulo> toEntityList(List<ProveedorArticuloDTO> dtos);
 }

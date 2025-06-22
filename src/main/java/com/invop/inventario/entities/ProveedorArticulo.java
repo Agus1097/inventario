@@ -35,5 +35,4 @@ public class ProveedorArticulo {
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_modelo")
     private TipoModelo tipoModelo;
-
 }

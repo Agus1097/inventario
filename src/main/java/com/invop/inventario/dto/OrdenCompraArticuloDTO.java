@@ -1,4 +1,4 @@
-package com.invop.inventario.dtos;
+package com.invop.inventario.dto;
 
 import lombok.*;
 

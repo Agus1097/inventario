@@ -22,7 +22,7 @@ public class Articulo {
 
     private String descripcion;
 
-    @Column(name ="produccion_diaria")
+    @Column(name = "produccion_diaria")
     private float produccionDiaria;
 
     @Column
@@ -68,23 +68,25 @@ public class Articulo {
     public void calcularCGI(float precioUnitario, float costoPedido) {
         // demanda * precioUnitario + demanda/cantidad * costoPedido + costoAlmacenamiento*cantidad/2
 
-        this.CGI = this.demandaArticulo * precioUnitario + this.demandaArticulo / this.loteOptimo * costoPedido + this.costoAlmacenamiento * this.loteOptimo/2;
-    };
+        this.CGI = this.demandaArticulo * precioUnitario + this.demandaArticulo / this.loteOptimo * costoPedido + this.costoAlmacenamiento * this.loteOptimo / 2;
+    }
 
-    public void calcularStockSeguridad(int demoraEntrega, float tiempoRevision, Long tipoModeloId) {
+    ;
+
+    public void calcularStockSeguridad(int demoraEntrega, float tiempoRevision, TipoModelo tipoModelo) {
         //periodo fijo
         // z * desviacionStandar * (numeroDiasEntreRevision + TiempoEntrega)
         // lote fijo
         // z * desviacionStandar
 
-        if (Objects.equals(tipoModeloId, TipoModelo.LOTE_FIJO.getId())) {
+        if (Objects.equals(tipoModelo, TipoModelo.LOTE_FIJO)) {
             this.stockSeguridad = (int) (this.z * this.desviacionEstandar);
         } else {
             this.stockSeguridad = (int) ((this.z * this.desviacionEstandar) * (tiempoRevision + demoraEntrega));
         }
     }
 
-    public void calcularLoteOptimo(float cargosPedido, Long tipoModeloId, int demoraEntrega, float tiempoRevision) {
+    public void calcularLoteOptimo(float cargosPedido, TipoModelo tipoModelo, int demoraEntrega, float tiempoRevision) {
         // lote fijo
         // raizcuadrada(2*demanda*costoPedido / costoAlacemaniento)
 
@@ -92,10 +94,10 @@ public class Articulo {
         //periodo fijo /// intervalo fijo
         // demanda diaria * (numeroDiasEntreRevision + TiempoEntrega) + z * desviacionStandar * (numeroDiasEntreRevision + TiempoEntrega) - nivelInventarioActual
 
-        if (Objects.equals(tipoModeloId, TipoModelo.LOTE_FIJO.getId())) {
+        if (Objects.equals(tipoModelo, TipoModelo.LOTE_FIJO)) {
             this.loteOptimo = (int) Math.pow((2 * this.demandaArticulo * cargosPedido / this.costoAlmacenamiento), 0.5);
         } else {
-            this.loteOptimo = (int) (this.demandaArticulo / 365 * ( tiempoRevision + demoraEntrega ) + this.stockSeguridad - this.stockActual);
+            this.loteOptimo = (int) (this.demandaArticulo / 365 * (tiempoRevision + demoraEntrega) + this.stockSeguridad - this.stockActual);
         }
     }
 
