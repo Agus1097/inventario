@@ -3,7 +3,6 @@ package com.invop.inventario.controllers;
 import com.invop.inventario.dto.ArticuloDTO;
 import com.invop.inventario.dto.ArticuloDatoDTO;
 import com.invop.inventario.dto.EditarArticuloDTO;
-import com.invop.inventario.entities.Articulo;
 import com.invop.inventario.services.ArticuloService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
