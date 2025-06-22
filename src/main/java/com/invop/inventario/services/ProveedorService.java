@@ -40,7 +40,7 @@ public class ProveedorService {
     }
 
     @Transactional
-    public Proveedor saveProveedor(ProveedorDTO proveedorDTO) {
+    public void saveProveedor(ProveedorDTO proveedorDTO) {
         Proveedor proveedor = proveedorMapper.toEntity(proveedorDTO);
 
         for (ProveedorArticulo pa : proveedor.getProveedorArticulos()) {
@@ -54,10 +54,12 @@ public class ProveedorService {
                 articulo.calcularInventarioMaximo();
                 articulo.calcularCGI(pa.getPrecioUnitario(), pa.getCargosPedido());
             }
+
+            pa.setProveedor(proveedor);
         }
 
         // Guardar proveedor y sus ProveedorArticulo en cascada
-        return proveedorRepository.save(proveedor);
+        proveedorRepository.save(proveedor);
     }
 
     @Transactional

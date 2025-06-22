@@ -3,6 +3,7 @@ package com.invop.inventario.controllers;
 import com.invop.inventario.dto.ProveedorDTO;
 import com.invop.inventario.entities.Proveedor;
 import com.invop.inventario.services.ProveedorService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,12 +30,13 @@ public class ProveedorController {
     }
 
     @PostMapping
-    public ResponseEntity<Proveedor> create(@RequestBody ProveedorDTO proveedorDTO) {
-        return ResponseEntity.ok(proveedorService.saveProveedor(proveedorDTO));
+    public ResponseEntity<?> create(@Valid @RequestBody ProveedorDTO proveedorDTO) {
+        proveedorService.saveProveedor(proveedorDTO);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Proveedor> update(@PathVariable Long id, @RequestBody Proveedor proveedor) {
+    public ResponseEntity<Proveedor> update(@PathVariable Long id, @Valid @RequestBody Proveedor proveedor) {
         return ResponseEntity.ok(proveedorService.updateProveedor(id, proveedor));
     }
 

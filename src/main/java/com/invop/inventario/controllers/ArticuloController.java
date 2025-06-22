@@ -5,6 +5,7 @@ import com.invop.inventario.dto.ArticuloDatoDTO;
 import com.invop.inventario.dto.EditarArticuloDTO;
 import com.invop.inventario.entities.Articulo;
 import com.invop.inventario.services.ArticuloService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -37,20 +38,20 @@ public class ArticuloController {
     }
 
     @PostMapping
-    public ResponseEntity<Articulo> create(@RequestBody ArticuloDTO dto) {
+    public ResponseEntity<Articulo> create(@Valid @RequestBody ArticuloDTO dto) {
         return ResponseEntity.ok(articuloService.saveArticulo(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Articulo> update(@PathVariable Long id, @RequestBody EditarArticuloDTO dto) {
-        Articulo actualizado = articuloService.updateArticulo(id, dto);
-        return ResponseEntity.ok(actualizado);
+    public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody EditarArticuloDTO dto) {
+        articuloService.updateArticulo(id, dto);
+        return ResponseEntity.ok("Actualizado");
     }
 
-    @DeleteMapping("/{id}")
+    @PutMapping("/baja/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         articuloService.deleteById(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}/proveedor-predeterminado")

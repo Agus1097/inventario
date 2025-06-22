@@ -1,6 +1,5 @@
 package com.invop.inventario.services;
 
-
 import com.invop.inventario.dto.ArticuloDTO;
 import com.invop.inventario.dto.ArticuloDatoDTO;
 import com.invop.inventario.dto.EditarArticuloDTO;
@@ -14,6 +13,7 @@ import com.invop.inventario.repositories.OrdenCompraRepository;
 import com.invop.inventario.repositories.ProveedorArticuloRepository;
 import com.invop.inventario.repositories.ProveedorRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,7 +45,10 @@ public class ArticuloService {
     }
 
     @Transactional
-    public Articulo saveArticulo(ArticuloDTO dto) {
+    public Articulo saveArticulo(@Valid ArticuloDTO dto) {
+        if (articuloRepository.existsByCodArticulo(dto.getCodArticulo())) {
+            throw new IllegalArgumentException("El artículo ya esta creado");
+        }
         Articulo articulo = articuloMapper.toEntityArticulo(dto);
         return articuloRepository.save(articulo);
     }
@@ -60,62 +63,30 @@ public class ArticuloService {
     }
 
     @Transactional
-    public Articulo updateArticulo(Long id, EditarArticuloDTO dto) {
-        Articulo articulo = articuloRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Artículo no encontrado con id: " + id));
-
-        if (dto.getDescripcion() == null || dto.getDescripcion().isBlank()) {
-            throw new IllegalArgumentException("La descripción del artículo no puede estar vacía");
-        }
-        if (dto.getNombre() == null || dto.getNombre().isBlank()) {
-            throw new IllegalArgumentException("El nombre del artículo no puede estar vacío");
-        }
-
-        // Solo seteás los campos que el usuario tiene permiso de editar
-        articulo.setNombre(dto.getNombre());
-        articulo.setDescripcion(dto.getDescripcion());
-        articulo.setDemandaArticulo(dto.getDemanda());
-        articulo.setCostoAlmacenamiento(dto.getCostoAlmacenamiento());
-        articulo.setCostoVenta(dto.getCostoCompra());
-        articulo.setStockActual(dto.getStockActual());
-        articulo.setCostoVenta(dto.getCostoVenta());
-
-        // Stock, proveedor, z, desviación, etc. NO se tocan desde este DTO
+    public void updateArticulo(Long id, EditarArticuloDTO dto) {
+        Articulo articulo = findById(id);
+        articuloMapper.updateArticuloFromDto(dto, articulo);
 
         // Obtener datos específicos de ProveedorArticulo (para cálculos)
         Proveedor proveedor = articulo.getProveedorPredeterminado();
-        int demoraEntrega = 0;
-        float tiempoRevision = 0f;
-        float precioUnitario = 0f;
-        float cargosPedido = 0f;
-        Long modeloInventario = 0L;
 
         if (proveedor != null) {
-            ProveedorArticulo proveedorArticulo = proveedorArticuloRepository
-                    .findByArticuloAndProveedor(articulo, proveedor)
+            ProveedorArticulo pa = proveedorArticuloRepository.findByArticuloAndProveedor(articulo, proveedor)
                     .orElseThrow(() -> new EntityNotFoundException("No existe relación Proveedor-Articulo para este artículo y proveedor"));
 
-            demoraEntrega = proveedorArticulo.getDemoraEntrega();
-            cargosPedido = proveedorArticulo.getCargosPedido();
-            tiempoRevision = proveedorArticulo.getTiempoRevision();
-            precioUnitario = proveedorArticulo.getPrecioUnitario();
-            modeloInventario = proveedorArticulo.getTipoModelo().getId();
+            articulo.calcularLoteOptimo(pa.getCargosPedido(), pa.getTipoModelo(), pa.getDemoraEntrega(), pa.getTiempoRevision());
+            articulo.calcularStockSeguridad(pa.getDemoraEntrega(), pa.getTiempoRevision(), pa.getTipoModelo());
+            articulo.calcularPuntoPedido(pa.getDemoraEntrega());
+            articulo.calcularInventarioMaximo();
+            articulo.calcularCGI(pa.getPrecioUnitario(), pa.getCargosPedido());
         }
 
-        // Recalcular campos derivados
-        //articulo.calcularLoteOptimo(cargosPedido, modeloInventario, demoraEntrega, tiempoRevision);
-        //articulo.calcularStockSeguridad(demoraEntrega, tiempoRevision, modeloInventario);
-        articulo.calcularPuntoPedido(demoraEntrega);
-        articulo.calcularInventarioMaximo();
-        articulo.calcularCGI(precioUnitario, cargosPedido);
-
-        return articuloRepository.save(articulo);
+        articuloRepository.save(articulo);
     }
 
     @Transactional
     public void deleteById(Long id) {
-        Articulo a = articuloRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("No se encontró el artículo"));
+        Articulo a = findById(id);
         if (a.getFechaBajaArticulo() != null) {
             throw new IllegalArgumentException("El artículo ya se encuentra desactivado");
         }

@@ -26,6 +26,6 @@ public class Proveedor {
     @Column(name = "fecha_baja_proveedor")
     private LocalDate fechaBajaProveedor;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "proveedor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProveedorArticulo> proveedorArticulos = new ArrayList<>();
 }
