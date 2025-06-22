@@ -57,4 +57,12 @@ public class ArticuloDTO {
     private LocalDate fechaBajaArticulo;
 
     private int stockSeguridad;
+
+    private int loteOptimo;
+
+    private int inventarioMaximo;
+
+    private int puntoPedido;
+
+    private float cgi;
 }
