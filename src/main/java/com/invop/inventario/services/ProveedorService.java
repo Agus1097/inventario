@@ -55,7 +55,7 @@ public class ProveedorService {
                 articulo.calcularCGI(pa.getPrecioUnitario(), pa.getCargosPedido());
             }
 
-            pa.setProveedor(proveedor);
+//            pa.setProveedor(proveedor);
         }
 
         // Guardar proveedor y sus ProveedorArticulo en cascada

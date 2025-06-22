@@ -1,5 +1,6 @@
 package com.invop.inventario.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,5 +28,6 @@ public class Proveedor {
     private LocalDate fechaBajaProveedor;
 
     @OneToMany(mappedBy = "proveedor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<ProveedorArticulo> proveedorArticulos = new ArrayList<>();
 }

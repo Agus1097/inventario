@@ -1,5 +1,6 @@
 package com.invop.inventario.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -20,6 +21,7 @@ public class ProveedorArticulo {
 
     @ManyToOne
     @JoinColumn(name = "id_proveedor")
+    @JsonBackReference
     private Proveedor proveedor;
 
     @Column(name = "cargos_pedido")
