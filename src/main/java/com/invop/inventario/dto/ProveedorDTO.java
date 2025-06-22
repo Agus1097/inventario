@@ -15,5 +15,7 @@ public class ProveedorDTO {
     @NotNull(message = "El nombre del proveedor no puede ser nulo")
     private String nombre;
 
+    private Long id;
+
     private List<ProveedorArticuloDTO> proveedorArticulos;
 }

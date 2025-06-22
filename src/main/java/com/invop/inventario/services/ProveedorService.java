@@ -44,6 +44,11 @@ public class ProveedorService {
         Proveedor proveedor = proveedorMapper.toEntity(proveedorDTO);
 
         for (ProveedorArticulo pa : proveedor.getProveedorArticulos()) {
+
+            if (pa.getArticulo() == null || pa.getArticulo().getId() == null) {
+                throw new IllegalArgumentException("Cada ProveedorArticulo debe tener un Articulo con un id válido");
+            }
+
             Articulo articulo = articuloService.findById(pa.getArticulo().getId());
 
             if (Objects.isNull(articulo.getProveedorPredeterminado())) {
