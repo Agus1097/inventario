@@ -1,6 +1,8 @@
 package com.invop.inventario.services;
 
 
+import com.invop.inventario.dto.ArticuloDTO;
+import com.invop.inventario.dto.EditarArticuloDTO;
 import com.invop.inventario.entities.Articulo;
 import com.invop.inventario.entities.EstadoOrden;
 import com.invop.inventario.entities.Proveedor;
@@ -63,33 +65,29 @@ public class ArticuloService {
     }
 
     @Transactional
-    public Articulo updateArticulo(Long id, Articulo articuloDetails) {
+    public Articulo updateArticulo(Long id, EditarArticuloDTO dto) {
         Articulo articulo = articuloRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Artículo no encontrado con id: " + id));
 
-        if (articuloDetails.getDescripcion() == null || articuloDetails.getDescripcion().isBlank()) {
+        if (dto.getDescripcion() == null || dto.getDescripcion().isBlank()) {
             throw new IllegalArgumentException("La descripción del artículo no puede estar vacía");
         }
-        if (articuloDetails.getCodArticulo() == null) {
-            throw new IllegalArgumentException("El código del artículo no puede estar vacío");
-        }
-        if (articuloDetails.getNombre() == null || articuloDetails.getNombre().isBlank()) {
+        if (dto.getNombre() == null || dto.getNombre().isBlank()) {
             throw new IllegalArgumentException("El nombre del artículo no puede estar vacío");
         }
 
-        articulo.setCodArticulo(articuloDetails.getCodArticulo());
-        articulo.setNombre(articuloDetails.getNombre());
-        articulo.setDescripcion(articuloDetails.getDescripcion());
-        articulo.setDemandaArticulo(articuloDetails.getDemandaArticulo());
-        articulo.setCostoAlmacenamiento(articuloDetails.getCostoAlmacenamiento());
-        articulo.setCostoVenta(articuloDetails.getCostoVenta());
-        articulo.setStockActual(articuloDetails.getStockActual());
-        articulo.setProveedorPredeterminado(articuloDetails.getProveedorPredeterminado());
-        articulo.setProduccionDiaria(articuloDetails.getProduccionDiaria());
-        articulo.setZ(articuloDetails.getZ());
-        articulo.setDesviacionEstandar(articuloDetails.getDesviacionEstandar());
+        // Solo seteás los campos que el usuario tiene permiso de editar
+        articulo.setNombre(dto.getNombre());
+        articulo.setDescripcion(dto.getDescripcion());
+        articulo.setDemandaArticulo(dto.getDemanda());
+        articulo.setCostoAlmacenamiento(dto.getCostoAlmacenamiento());
+        articulo.setCostoVenta(dto.getCostoCompra());
+        articulo.setStockActual(dto.getStockActual());
+        articulo.setCostoVenta(dto.getCostoVenta());
 
-        // Obtener datos específicos de ProveedorArticulo
+        // Stock, proveedor, z, desviación, etc. NO se tocan desde este DTO
+
+        // Obtener datos específicos de ProveedorArticulo (para cálculos)
         Proveedor proveedor = articulo.getProveedorPredeterminado();
         int demoraEntrega = 0;
         float tiempoRevision = 0f;
@@ -109,7 +107,7 @@ public class ArticuloService {
             modeloInventario = proveedorArticulo.getTipoModelo().getId();
         }
 
-        // Recalcular campos derivados usando los datos de ProveedorArticulo
+        // Recalcular campos derivados
         articulo.calcularLoteOptimo(cargosPedido, modeloInventario, demoraEntrega, tiempoRevision);
         articulo.calcularStockSeguridad(demoraEntrega, tiempoRevision, modeloInventario);
         articulo.calcularPuntoPedido(demoraEntrega);

@@ -1,5 +1,6 @@
 package com.invop.inventario.services;
 
+import com.invop.inventario.dto.CrearVentaDTO;
 import com.invop.inventario.entities.Articulo;
 import com.invop.inventario.entities.EstadoOrden;
 import com.invop.inventario.entities.OrdenCompra;
@@ -41,24 +42,27 @@ public class VentaService {
     }
 
     @Transactional
-    public Venta saveVenta(Venta venta) {
-        Articulo articulo = articuloRepository.findById(venta.getArticulo().getId())
+    public Venta saveVenta(CrearVentaDTO dto) {
+        System.out.println("DTO recibido: " + dto);
+        Articulo articulo = articuloRepository.findById(dto.getArticuloId())
                 .orElseThrow(() -> new EntityNotFoundException("Artículo no encontrado"));
 
-        // Validar stock suficiente
-        if (venta.getCantidad() > articulo.getStockActual()) {
+        if (dto.getCantidad() > articulo.getStockActual()) {
             throw new IllegalArgumentException("No hay suficiente stock para realizar la venta");
         }
 
         // Actualizar stock
-        articulo.setStockActual(articulo.getStockActual() - venta.getCantidad());
+        articulo.setStockActual(articulo.getStockActual() - dto.getCantidad());
         articuloRepository.save(articulo);
 
-        // Calcular y setear montoTotal de la venta
-        float montoVenta = venta.getCantidad() * articulo.getCostoVenta();
-        venta.setMontoTotal(montoVenta);
+        // Crear entidad Venta
+        Venta venta = new Venta();
+        venta.setArticulo(articulo);
+        venta.setCantidad(dto.getCantidad());
+        venta.setMontoTotal(dto.getCantidad() * articulo.getCostoVenta());
+        venta.setFechaVenta(new Date());
 
-        // Obtener ProveedorArticulo para el proveedor predeterminado
+        // Lógica de generación de orden (si aplica)
         if (articulo.getProveedorPredeterminado() != null) {
             ProveedorArticulo proveedorArticulo = proveedorArticuloRepository
                     .findByArticuloAndProveedor(articulo, articulo.getProveedorPredeterminado())
@@ -66,31 +70,27 @@ public class VentaService {
 
             boolean esLoteFijo = proveedorArticulo.getTipoModelo() != null &&
                     proveedorArticulo.getTipoModelo().getId().equals(TipoModelo.LOTE_FIJO.getId());
-            boolean stockEsMenorOIgualPuntoPedido = articulo.getStockActual() <= articulo.getPuntoPedido();
 
-            boolean tieneOrdenPendienteOEnviada = ordenCompraRepository
-                    .existsByArticuloAndEstadoOrdenIn(
-                            articulo,
-                            List.of(EstadoOrden.PENDIENTE, EstadoOrden.ENVIADO)
-                    );
+            boolean stockBajo = articulo.getStockActual() <= articulo.getPuntoPedido();
 
-            if (esLoteFijo && stockEsMenorOIgualPuntoPedido && !tieneOrdenPendienteOEnviada) {
+            boolean yaTieneOrden = ordenCompraRepository.existsByArticuloAndEstadoOrdenIn(
+                    articulo,
+                    List.of(EstadoOrden.PENDIENTE, EstadoOrden.ENVIADO)
+            );
+
+            if (esLoteFijo && stockBajo && !yaTieneOrden) {
                 OrdenCompra orden = new OrdenCompra();
                 orden.setArticulo(articulo);
                 orden.setProveedor(articulo.getProveedorPredeterminado());
                 orden.setCantidad(articulo.getLoteOptimo());
                 orden.setEstadoOrden(EstadoOrden.PENDIENTE);
                 orden.setFechaCreacionOrdenCompra(LocalDate.now());
-                // Calcular y setear montoTotal de la orden de compra usando precioUnitario de ProveedorArticulo
-                float montoOrden = articulo.getLoteOptimo() * proveedorArticulo.getPrecioUnitario();
-                orden.setMontoTotal(montoOrden);
+                orden.setMontoTotal(articulo.getLoteOptimo() * proveedorArticulo.getPrecioUnitario());
 
                 ordenCompraRepository.save(orden);
             }
         }
 
-        venta.setArticulo(articulo);
-        venta.setFechaVenta(new Date());
         return ventaRepository.save(venta);
     }
 

@@ -13,25 +13,14 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+//TODO: Agregar estos atributos a DTO faltantes
 public class ArticuloDTO {
-
-
-    private Long id;
-    private Long codArticulo;
     private String nombre;
     private String descripcion;
-    private float demandaArticulo;
+    private Long codigo;
     private float costoAlmacenamiento;
-    private float costoPedido;
+    private float demanda;
     private float costoCompra;
-    private LocalDate fechaBajaArticulo;
-    private int puntoPedido;
-    private int stockSeguridad;
-    private int inventarioMaximo;
-    private int loteOptimo;
     private int stockActual;
-
-    private ProveedorDTO proveedorPredeterminado;
-
-    private TipoModelo tipoModelo;
+    private float costoVenta;
 }

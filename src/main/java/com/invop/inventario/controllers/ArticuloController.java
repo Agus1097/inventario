@@ -1,5 +1,7 @@
 package com.invop.inventario.controllers;
 
+import com.invop.inventario.dto.ArticuloDTO;
+import com.invop.inventario.dto.EditarArticuloDTO;
 import com.invop.inventario.entities.Articulo;
 import com.invop.inventario.services.ArticuloService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,15 +32,26 @@ public class ArticuloController {
     }
 
     @PostMapping
-    public ResponseEntity<Articulo> create(@RequestBody Articulo articulo) {
-        Articulo created = articuloService.saveArticulo(articulo);
-        return ResponseEntity.ok(created);
+    public ResponseEntity<Articulo> create(@RequestBody ArticuloDTO dto) {
+        Articulo articulo = new Articulo();
+        articulo.setNombre(dto.getNombre());
+        articulo.setDescripcion(dto.getDescripcion());
+        articulo.setCodArticulo(dto.getCodigo());
+        articulo.setCostoAlmacenamiento(dto.getCostoAlmacenamiento());
+        articulo.setDemandaArticulo(dto.getDemanda());
+        articulo.setCostoVenta(dto.getCostoCompra()); // asumí esto
+        articulo.setStockActual(dto.getStockActual());
+        articulo.setCostoVenta(dto.getCostoVenta());
+        // El resto de los campos podrían calcularse o dejarse por defecto
+
+        Articulo creado = articuloService.saveArticulo(articulo);
+        return ResponseEntity.ok(creado);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Articulo> update(@PathVariable Long id, @RequestBody Articulo articulo) {
-        Articulo updated = articuloService.updateArticulo(id, articulo);
-        return ResponseEntity.ok(updated);
+    public ResponseEntity<Articulo> update(@PathVariable Long id, @RequestBody EditarArticuloDTO dto) {
+        Articulo actualizado = articuloService.updateArticulo(id, dto);
+        return ResponseEntity.ok(actualizado);
     }
 
     @DeleteMapping("/{id}")

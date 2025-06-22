@@ -1,5 +1,6 @@
 package com.invop.inventario.controllers;
 
+import com.invop.inventario.dto.CrearVentaDTO;
 import com.invop.inventario.entities.Venta;
 import com.invop.inventario.services.VentaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,9 @@ public class VentaController {
     }
 
     @PostMapping
-    public ResponseEntity<Venta> create(@RequestBody Venta venta) {
-        return ResponseEntity.ok(ventaService.saveVenta(venta));
+    public ResponseEntity<Venta> create(@RequestBody CrearVentaDTO dto) {
+
+        return ResponseEntity.ok(ventaService.saveVenta(dto));
     }
 
     @PutMapping("/{id}")
