@@ -29,13 +29,14 @@ public class VentaController {
 
     @PostMapping
     public ResponseEntity<Venta> create(@RequestBody CrearVentaDTO dto) {
-
-        return ResponseEntity.ok(ventaService.saveVenta(dto));
+        ventaService.saveVenta(dto);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Venta> update(@PathVariable Long id, @RequestBody Venta venta) {
-        return ResponseEntity.ok(ventaService.updateVenta(id, venta));
+        ventaService.updateVenta(id, venta);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
