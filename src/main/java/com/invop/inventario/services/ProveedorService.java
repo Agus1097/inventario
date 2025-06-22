@@ -173,6 +173,7 @@ public class ProveedorService {
             info.put("articuloId", articulo.getId());
             info.put("nombreArticulo", articulo.getNombre());
             info.put("descripcionArticulo", articulo.getDescripcion());
+            info.put("codArticulo", articulo.getCodArticulo());
             // Datos de ProveedorArticulo
             info.put("demoraEntrega", pa.getDemoraEntrega());
             info.put("precioUnitario", pa.getPrecioUnitario());
