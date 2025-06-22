@@ -68,7 +68,7 @@ public class ProveedorService {
     }
 
     @Transactional
-    public Proveedor updateProveedor(Long id, Proveedor proveedorDetails) {
+    public ProveedorDTO updateProveedor(Long id, Proveedor proveedorDetails) {
         Proveedor proveedor = proveedorRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Proveedor no encontrado"));
 
@@ -129,7 +129,10 @@ public class ProveedorService {
                         .noneMatch(paNuevo -> paNuevo.getArticulo().getId().equals(paExistente.getArticulo().getId()))
         );
 
-        return proveedorRepository.save(proveedor);
+        proveedorRepository.save(proveedor);
+
+
+        return proveedorMapper.toDto(proveedor);
     }
 
     @Transactional

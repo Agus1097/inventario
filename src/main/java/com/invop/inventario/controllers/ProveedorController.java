@@ -2,6 +2,7 @@ package com.invop.inventario.controllers;
 
 import com.invop.inventario.dto.ProveedorDTO;
 import com.invop.inventario.entities.Proveedor;
+import com.invop.inventario.mappers.ProveedorMapper;
 import com.invop.inventario.services.ProveedorService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ public class ProveedorController {
 
     @Autowired
     private ProveedorService proveedorService;
+    @Autowired
+    private ProveedorMapper proveedorMapper;
 
     @GetMapping
     public List<ProveedorDTO> getAll() {
@@ -25,8 +28,8 @@ public class ProveedorController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Proveedor> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(proveedorService.findById(id));
+    public ResponseEntity<ProveedorDTO> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(proveedorMapper.toDto(proveedorService.findById(id)));
     }
 
     @PostMapping
@@ -36,7 +39,7 @@ public class ProveedorController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Proveedor> update(@PathVariable Long id, @Valid @RequestBody Proveedor proveedor) {
+    public ResponseEntity<ProveedorDTO> update(@PathVariable Long id, @Valid @RequestBody Proveedor proveedor) {
         return ResponseEntity.ok(proveedorService.updateProveedor(id, proveedor));
     }
 
