@@ -15,7 +15,7 @@ public interface ArticuloMapper {
 
     ArticuloDatoDTO toDto(Articulo articulo);
 
-//    @Mapping(target = "id", ignore = true)
+    //@Mapping(target = "id", ignore = true)
     Articulo toEntity(ArticuloDatoDTO dto);
 
     @Mapping(target = "id", ignore = true)
