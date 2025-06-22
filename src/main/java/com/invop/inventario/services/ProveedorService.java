@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -128,22 +129,17 @@ public class ProveedorService {
                 proveedorDetails.getProveedorArticulos().stream()
                         .noneMatch(paNuevo -> paNuevo.getArticulo().getId().equals(paExistente.getArticulo().getId()))
         );
-
         proveedorRepository.save(proveedor);
-
 
         return proveedorMapper.toDto(proveedor);
     }
 
     @Transactional
     public void deleteById(Long id) {
-        Proveedor proveedor = proveedorRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Proveedor no encontrado"));
+        Proveedor proveedor = proveedorRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Proveedor no encontrado"));
 
         // Verificar que no tenga órdenes de compra en estado pendiente o enviada
-        boolean tieneOrdenes = ordenCompraRepository.existsByProveedorAndEstadoOrdenIn(
-                proveedor, List.of(EstadoOrden.PENDIENTE, EstadoOrden.ENVIADO)
-        );
+        boolean tieneOrdenes = ordenCompraRepository.existsByProveedorAndEstadoOrdenIn(proveedor, List.of(EstadoOrden.PENDIENTE, EstadoOrden.ENVIADO));
         if (tieneOrdenes) {
             throw new IllegalArgumentException("El proveedor tiene órdenes de compra pendientes o enviadas y no puede ser dado de baja.");
         }
@@ -155,7 +151,7 @@ public class ProveedorService {
         }
 
         // Setear fecha de baja
-        proveedor.setFechaBajaProveedor(java.time.LocalDate.now());
+        proveedor.setFechaBajaProveedor(LocalDate.now());
         proveedorRepository.save(proveedor);
     }
 
@@ -191,7 +187,7 @@ public class ProveedorService {
         return resultado;
     }
 
-    private void calcularProveedorPredeterminado(){
+    private void calcularProveedorPredeterminado() {
 
     }
 }
