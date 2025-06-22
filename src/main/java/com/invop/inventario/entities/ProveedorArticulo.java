@@ -21,7 +21,6 @@ public class ProveedorArticulo {
 
     @ManyToOne
     @JoinColumn(name = "id_proveedor")
-    @JsonBackReference
     private Proveedor proveedor;
 
     @Column(name = "cargos_pedido")

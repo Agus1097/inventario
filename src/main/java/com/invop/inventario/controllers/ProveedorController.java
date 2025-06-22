@@ -20,7 +20,7 @@ public class ProveedorController {
     private ProveedorService proveedorService;
 
     @GetMapping
-    public List<Proveedor> getAll() {
+    public List<ProveedorDTO> getAll() {
         return proveedorService.findAll();
     }
 

@@ -28,6 +28,5 @@ public class Proveedor {
     private LocalDate fechaBajaProveedor;
 
     @OneToMany(mappedBy = "proveedor", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<ProveedorArticulo> proveedorArticulos = new ArrayList<>();
 }
