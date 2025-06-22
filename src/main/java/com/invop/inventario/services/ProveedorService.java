@@ -32,8 +32,7 @@ public class ProveedorService {
     }
 
     public Proveedor findById(Long id) {
-        Proveedor proveedor = proveedorRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Proveedor no encontrado"));
+        Proveedor proveedor = proveedorRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Proveedor no encontrado"));
         if (proveedor.getFechaBajaProveedor() != null) {
             throw new IllegalArgumentException("El proveedor está dado de baja.");
         }
@@ -70,14 +69,9 @@ public class ProveedorService {
 
     @Transactional
     public ProveedorDTO updateProveedor(Long id, Proveedor proveedorDetails) {
-        Proveedor proveedor = proveedorRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Proveedor no encontrado"));
+        Proveedor proveedor = findById(id);
 
         proveedor.setNombre(proveedorDetails.getNombre());
-
-        // if (proveedorDetails.getProveedorArticulos() == null || proveedorDetails.getProveedorArticulos().isEmpty()) {
-        //     throw new IllegalArgumentException("Debe asociar al menos un ProveedorArticulo al proveedor.");
-        // }
 
         // Actualizar o agregar ProveedorArticulo según corresponda
         for (ProveedorArticulo paNuevo : proveedorDetails.getProveedorArticulos()) {

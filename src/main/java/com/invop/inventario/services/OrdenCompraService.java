@@ -1,16 +1,12 @@
 package com.invop.inventario.services;
 
-import com.invop.inventario.entities.Articulo;
-import com.invop.inventario.entities.EstadoOrden;
-import com.invop.inventario.entities.OrdenCompra;
-import com.invop.inventario.entities.Proveedor;
-import com.invop.inventario.entities.ProveedorArticulo;
-import com.invop.inventario.repositories.ArticuloRepository;
+import com.invop.inventario.dto.OrdenCompraDTO;
+import com.invop.inventario.entities.*;
+import com.invop.inventario.mappers.OrdenCompraMapper;
 import com.invop.inventario.repositories.OrdenCompraRepository;
 import com.invop.inventario.repositories.ProveedorArticuloRepository;
-import com.invop.inventario.repositories.ProveedorRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,38 +14,37 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class OrdenCompraService {
 
-    @Autowired
     private OrdenCompraRepository ordenCompraRepository;
-    @Autowired
-    private ArticuloRepository articuloRepository;
-    @Autowired
-    private ProveedorRepository proveedorRepository;
-    @Autowired
+    private ArticuloService articuloService;
+    private ProveedorService proveedorService;
     private ProveedorArticuloRepository proveedorArticuloRepository;
+    private OrdenCompraMapper ordenCompraMapper;
 
-    public List<OrdenCompra> findAll() {
-        return ordenCompraRepository.findAll();
+    public List<OrdenCompraDTO> findAll() {
+        return ordenCompraMapper.toDtoList(ordenCompraRepository.findAll());
     }
 
     public OrdenCompra findById(Long id) {
-        return ordenCompraRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Orden de compra no encontrada"));
+        return ordenCompraRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Orden de compra no encontrada"));
+    }
+
+    public OrdenCompraDTO getOrdenCompraById(Long id) {
+        OrdenCompra ordenCompra = findById(id);
+        return ordenCompraMapper.toDto(ordenCompra);
     }
 
     @Transactional
-    public OrdenCompra saveOrdenCompra(OrdenCompra ordenCompra) {
-        Articulo articulo = articuloRepository.findById(ordenCompra.getArticulo().getId())
-                .orElseThrow(() -> new EntityNotFoundException("Artículo no encontrado"));
-        Proveedor proveedor = proveedorRepository.findById(ordenCompra.getProveedor().getId())
-                .orElseThrow(() -> new EntityNotFoundException("Proveedor no encontrado"));
+    public OrdenCompraDTO saveOrdenCompra(OrdenCompra ordenCompra) {
+        Articulo articulo = articuloService.findById(ordenCompra.getArticulo().getId());
+        Proveedor proveedor = proveedorService.findById(ordenCompra.getProveedor().getId());
 
         // Verificar si ya existe una orden pendiente o enviada para este artículo
         boolean existeOrden = ordenCompraRepository.existsByArticuloAndEstadoOrdenIn(
                 articulo,
-                List.of(EstadoOrden.PENDIENTE, EstadoOrden.ENVIADO)
-        );
+                List.of(EstadoOrden.PENDIENTE, EstadoOrden.ENVIADO));
         if (existeOrden) {
             throw new IllegalArgumentException("Ya existe una orden de compra pendiente o enviada para este artículo.");
         }
@@ -67,13 +62,12 @@ public class OrdenCompraService {
         float montoTotal = ordenCompra.getCantidad() * proveedorArticulo.getPrecioUnitario();
         ordenCompra.setMontoTotal(montoTotal);
 
-        return ordenCompraRepository.save(ordenCompra);
+        return ordenCompraMapper.toDto(ordenCompraRepository.save(ordenCompra));
     }
 
     @Transactional
-    public OrdenCompra updateOrdenCompra(Long id, OrdenCompra ordenCompraDetails) {
-        OrdenCompra ordenCompra = ordenCompraRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Orden de compra no encontrada"));
+    public OrdenCompraDTO updateOrdenCompra(Long id, OrdenCompra ordenCompraDetails) {
+        OrdenCompra ordenCompra = findById(id);
 
         EstadoOrden estadoActual = ordenCompra.getEstadoOrden();
         EstadoOrden nuevoEstado = ordenCompraDetails.getEstadoOrden();
@@ -109,10 +103,9 @@ public class OrdenCompraService {
             if (EstadoOrden.FINALIZADO.equals(nuevoEstado)) {
                 ordenCompra.setEstadoOrden(EstadoOrden.FINALIZADO);
                 // Actualizar stockActual del artículo
-                Articulo articulo = articuloRepository.findById(ordenCompra.getArticulo().getId())
-                                                    .orElseThrow(() -> new EntityNotFoundException("Artículo no encontrado"));
+                Articulo articulo = articuloService.findById(ordenCompra.getArticulo().getId());
                 articulo.setStockActual(articulo.getStockActual() + ordenCompra.getCantidad());
-                articuloRepository.save(articulo);
+                articuloService.save(articulo);
 
                 // Informar si el stockActual no supera el puntoPedido
                 if (articulo.getStockActual() <= articulo.getPuntoPedido()) {
@@ -125,7 +118,7 @@ public class OrdenCompraService {
             throw new IllegalArgumentException("No se puede modificar una orden finalizada o cancelada.");
         }
 
-        return ordenCompraRepository.save(ordenCompra);
+        return ordenCompraMapper.toDto(ordenCompraRepository.save(ordenCompra));
     }
 
     @Transactional
@@ -133,9 +126,8 @@ public class OrdenCompraService {
         ordenCompraRepository.deleteById(id);
     }
 
-    public List<OrdenCompra> findByArticulo(Long articuloId) {
-        Articulo articulo = articuloRepository.findById(articuloId)
-                .orElseThrow(() -> new EntityNotFoundException("Artículo no encontrado"));
-        return ordenCompraRepository.findByArticulo(articulo);
+    public List<OrdenCompraDTO> findByArticulo(Long articuloId) {
+        Articulo articulo = articuloService.findById(articuloId);
+        return ordenCompraMapper.toDtoList(ordenCompraRepository.findByArticulo(articulo));
     }
 }

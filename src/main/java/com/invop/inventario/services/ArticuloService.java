@@ -47,12 +47,21 @@ public class ArticuloService {
     }
 
     @Transactional
-    public void saveArticulo(@Valid ArticuloDTO dto) {
+    public void saveArticulo(ArticuloDTO dto) {
         if (articuloRepository.existsByCodArticulo(dto.getCodArticulo())) {
             throw new IllegalArgumentException("El artículo ya esta creado");
         }
 
         Articulo articulo = articuloMapper.toEntityArticulo(dto);
+        articuloRepository.save(articulo);
+    }
+
+    @Transactional
+    public void save(Articulo articulo) {
+        if (articuloRepository.existsByCodArticulo(articulo.getCodArticulo())) {
+            throw new IllegalArgumentException("El artículo ya esta creado");
+        }
+
         articuloRepository.save(articulo);
     }
 
