@@ -20,6 +20,10 @@ public interface ArticuloMapper {
 
     Articulo toEntityArticulo(ArticuloDTO dto);
 
+    ArticuloDTO toArticuloDto(Articulo articulo);
+
+    List<ArticuloDTO> toArticuloDtoList(List<Articulo> articulos);
+
     List<ArticuloDatoDTO> toDtoList(List<Articulo> articulo);
 
     List<Articulo> toEntityList(List<ArticuloDatoDTO> dtos);

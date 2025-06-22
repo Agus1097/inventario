@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -47,4 +49,10 @@ public class ArticuloDTO {
     @NotNull(message = "La desviación estándar no puede ser nula.")
     @PositiveOrZero(message = "La desviación estándar no puede ser negativa.")
     private float desviacionEstandar;
+
+    private ProveedorDTO proveedorPredeterminado;
+
+    private LocalDate fechaBajaArticulo;
+
+    private int stockSeguridad;
 }

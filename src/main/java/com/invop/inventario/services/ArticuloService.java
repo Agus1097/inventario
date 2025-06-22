@@ -34,9 +34,11 @@ public class ArticuloService {
     private final OrdenCompraRepository ordenCompraRepository;
     private final ArticuloMapper articuloMapper;
 
-    public Page<Articulo> findAll(int page, int pageSize) {
+    public Page<ArticuloDTO> findAll(int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        return articuloRepository.findByFechaBajaArticuloIsNull(pageable);
+        Page<Articulo> articulos = articuloRepository.findByFechaBajaArticuloIsNull(pageable);
+
+        return articulos.map(articuloMapper::toArticuloDto);
     }
 
     public List<ArticuloDatoDTO> getAllArticuloDatoDTO() {
@@ -45,12 +47,13 @@ public class ArticuloService {
     }
 
     @Transactional
-    public Articulo saveArticulo(@Valid ArticuloDTO dto) {
+    public void saveArticulo(@Valid ArticuloDTO dto) {
         if (articuloRepository.existsByCodArticulo(dto.getCodArticulo())) {
             throw new IllegalArgumentException("El artículo ya esta creado");
         }
+
         Articulo articulo = articuloMapper.toEntityArticulo(dto);
-        return articuloRepository.save(articulo);
+        articuloRepository.save(articulo);
     }
 
     public Articulo findById(Long id) {
@@ -60,6 +63,11 @@ public class ArticuloService {
             throw new IllegalArgumentException("El artículo está dado de baja.");
         }
         return articulo;
+    }
+
+    public ArticuloDTO getById(Long id) {
+        Articulo articulo = findById(id);
+        return articuloMapper.toArticuloDto(articulo);
     }
 
     @Transactional
@@ -107,30 +115,32 @@ public class ArticuloService {
     }
 
     @Transactional
-    public Articulo setProveedorPredeterminado(Long articuloId, Long proveedorId) {
+    public void setProveedorPredeterminado(Long articuloId, Long proveedorId) {
         Articulo articulo = articuloRepository.findById(articuloId)
                 .orElseThrow(() -> new EntityNotFoundException("Artículo no encontrado con id: " + articuloId));
 
-        if (proveedorId == null) {
-            articulo.setProveedorPredeterminado(null);
-            return articuloRepository.save(articulo);
+        Proveedor proveedor;
+        if (proveedorId != null) {
+            proveedor = proveedorRepository.findById(proveedorId)
+                    .orElseThrow(() -> new EntityNotFoundException("Proveedor no encontrado con id: " + proveedorId));
+        } else {
+            proveedor = null;
         }
 
-        Proveedor proveedor = proveedorRepository.findById(proveedorId)
-                .orElseThrow(() -> new EntityNotFoundException("Proveedor no encontrado con id: " + proveedorId));
-
         articulo.setProveedorPredeterminado(proveedor);
-        return articuloRepository.save(articulo);
+        articuloRepository.save(articulo);
     }
 
-    public List<Articulo> getArticulosAReponer() {
-        return articuloRepository.findArticulosAReponer();
+    public List<ArticuloDTO> getArticulosAReponer() {
+        List<Articulo> articulos = articuloRepository.findArticulosAReponer();
+        return articuloMapper.toArticuloDtoList(articulos);
     }
 
-    public List<Articulo> getArticulosFaltantes() {
+    public List<ArticuloDTO> getArticulosFaltantes() {
         // Devuelve todos los artículos cuyo stockActual <= stockSeguridad
-        return articuloRepository.findAll().stream()
+        List<Articulo> articulos = articuloRepository.findAll().stream()
                 .filter(a -> a.getStockActual() <= a.getStockSeguridad())
                 .toList();
+        return articuloMapper.toArticuloDtoList(articulos);
     }
 }

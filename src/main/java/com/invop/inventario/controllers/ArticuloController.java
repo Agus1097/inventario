@@ -22,8 +22,8 @@ public class ArticuloController {
     private ArticuloService articuloService;
 
     @GetMapping
-    public Page<Articulo> getAll(@RequestParam(defaultValue = "0") int page,
-                                 @RequestParam(defaultValue = "10") int size) {
+    public Page<ArticuloDTO> getAll(@RequestParam(defaultValue = "0") int page,
+                                    @RequestParam(defaultValue = "10") int size) {
         return articuloService.findAll(page, size);
     }
 
@@ -33,13 +33,14 @@ public class ArticuloController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Articulo> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(articuloService.findById(id));
+    public ResponseEntity<ArticuloDTO> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(articuloService.getById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Articulo> create(@Valid @RequestBody ArticuloDTO dto) {
-        return ResponseEntity.ok(articuloService.saveArticulo(dto));
+    public ResponseEntity<?> create(@Valid @RequestBody ArticuloDTO dto) {
+        articuloService.saveArticulo(dto);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
@@ -56,17 +57,17 @@ public class ArticuloController {
 
     @PutMapping("/{id}/proveedor-predeterminado")
     public ResponseEntity<Articulo> setProveedorPredeterminado(@PathVariable Long id, @RequestParam(required = false) Long proveedorId) {
-        Articulo updated = articuloService.setProveedorPredeterminado(id, proveedorId);
-        return ResponseEntity.ok(updated);
+        articuloService.setProveedorPredeterminado(id, proveedorId);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/a-reponer")
-    public List<Articulo> getArticulosAReponer() {
+    public List<ArticuloDTO> getArticulosAReponer() {
         return articuloService.getArticulosAReponer();
     }
 
     @GetMapping("/faltantes")
-    public List<Articulo> getArticulosFaltantes() {
+    public List<ArticuloDTO> getArticulosFaltantes() {
         return articuloService.getArticulosFaltantes();
     }
 }
