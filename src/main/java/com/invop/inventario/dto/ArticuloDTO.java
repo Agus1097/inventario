@@ -14,6 +14,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class ArticuloDTO {
 
+    private Long id;
+
     @NotNull(message = "El código del artículo no puede ser nulo.")
     private Long codArticulo;
 
