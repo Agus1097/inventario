@@ -40,8 +40,8 @@ public class ProveedorController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProveedorDTO> update(@PathVariable Long id, @Valid @RequestBody Proveedor proveedor) {
-        return ResponseEntity.ok(proveedorService.updateProveedor(id, proveedor));
+    public ResponseEntity<ProveedorDTO> update(@PathVariable Long id, @Valid @RequestBody ProveedorDTO proveedorDTO) {
+        return ResponseEntity.ok(proveedorService.updateProveedor(id, proveedorDTO));
     }
 
     @PutMapping("/baja/{id}")
