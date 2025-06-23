@@ -1,6 +1,7 @@
 package com.invop.inventario.controllers;
 
 import com.invop.inventario.dto.CrearVentaDTO;
+import com.invop.inventario.dto.VentaResponseDTO;
 import com.invop.inventario.entities.Venta;
 import com.invop.inventario.services.VentaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +19,12 @@ public class VentaController {
     private VentaService ventaService;
 
     @GetMapping
-    public List<Venta> getAll() {
+    public List<VentaResponseDTO> getAll() {
         return ventaService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Venta> getById(@PathVariable Long id) {
+    public ResponseEntity<VentaResponseDTO> getById(@PathVariable Long id) {
         return ResponseEntity.ok(ventaService.findById(id));
     }
 

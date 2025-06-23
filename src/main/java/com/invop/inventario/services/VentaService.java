@@ -1,6 +1,7 @@
 package com.invop.inventario.services;
 
 import com.invop.inventario.dto.CrearVentaDTO;
+import com.invop.inventario.dto.VentaResponseDTO;
 import com.invop.inventario.entities.Articulo;
 import com.invop.inventario.entities.EstadoOrden;
 import com.invop.inventario.entities.OrdenCompra;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.time.LocalDate;
+import java.util.stream.Collectors;
 
 @Service
 public class VentaService {
@@ -32,13 +34,14 @@ public class VentaService {
     @Autowired
     private ProveedorArticuloRepository proveedorArticuloRepository;
 
-    public List<Venta> findAll() {
-        return ventaRepository.findAll();
+    public List<VentaResponseDTO> findAll() {
+        return ventaRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
     }
 
-    public Venta findById(Long id) {
-        return ventaRepository.findById(id)
+    public VentaResponseDTO findById(Long id) {
+        Venta venta = ventaRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Venta no encontrada"));
+        return toDTO(venta);
     }
 
     @Transactional
@@ -113,5 +116,16 @@ public class VentaService {
     @Transactional
     public void deleteById(Long id) {
         ventaRepository.deleteById(id);
+    }
+
+    private VentaResponseDTO toDTO(Venta venta) {
+        VentaResponseDTO dto = new VentaResponseDTO();
+        dto.setId(venta.getId());
+        dto.setArticuloId(venta.getArticulo().getId());
+        dto.setArticuloNombre(venta.getArticulo().getNombre());
+        dto.setCantidad(venta.getCantidad());
+        dto.setMontoTotal(venta.getMontoTotal()); 
+        dto.setFechaVenta(venta.getFechaVenta());
+        return dto;
     }
 }
