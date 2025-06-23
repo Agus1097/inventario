@@ -1,5 +1,6 @@
 package com.invop.inventario.services;
 
+import com.invop.inventario.dto.CrearOrdenCompraDTO;
 import com.invop.inventario.dto.OrdenCompraDTO;
 import com.invop.inventario.entities.*;
 import com.invop.inventario.mappers.OrdenCompraMapper;
@@ -7,6 +8,8 @@ import com.invop.inventario.repositories.OrdenCompraRepository;
 import com.invop.inventario.repositories.ProveedorArticuloRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+
+import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,9 +40,9 @@ public class OrdenCompraService {
     }
 
     @Transactional
-    public OrdenCompraDTO saveOrdenCompra(OrdenCompra ordenCompra) {
-        Articulo articulo = articuloService.findById(ordenCompra.getArticulo().getId());
-        Proveedor proveedor = proveedorService.findById(ordenCompra.getProveedor().getId());
+    public OrdenCompraDTO saveOrdenCompra(CrearOrdenCompraDTO dto) {
+        Articulo articulo = articuloService.findById(dto.getArticuloId());
+        Proveedor proveedor = proveedorService.findById(dto.getProveedorId());
 
         // Verificar si ya existe una orden pendiente o enviada para este artículo
         boolean existeOrden = ordenCompraRepository.existsByArticuloAndEstadoOrdenIn(
@@ -49,6 +52,9 @@ public class OrdenCompraService {
             throw new IllegalArgumentException("Ya existe una orden de compra pendiente o enviada para este artículo.");
         }
 
+        OrdenCompra ordenCompra = new OrdenCompra();
+
+        ordenCompra.setCantidad(dto.getCantidad());
         ordenCompra.setArticulo(articulo);
         ordenCompra.setProveedor(proveedor);
         ordenCompra.setFechaCreacionOrdenCompra(LocalDate.now());

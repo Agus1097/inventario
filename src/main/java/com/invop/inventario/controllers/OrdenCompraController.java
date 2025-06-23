@@ -1,5 +1,6 @@
 package com.invop.inventario.controllers;
 
+import com.invop.inventario.dto.CrearOrdenCompraDTO;
 import com.invop.inventario.dto.OrdenCompraDTO;
 import com.invop.inventario.entities.OrdenCompra;
 import com.invop.inventario.services.OrdenCompraService;
@@ -28,8 +29,8 @@ public class OrdenCompraController {
     }
 
     @PostMapping
-    public ResponseEntity<OrdenCompraDTO> create(@RequestBody OrdenCompra ordenCompra) {
-        return ResponseEntity.ok(ordenCompraService.saveOrdenCompra(ordenCompra));
+    public ResponseEntity<OrdenCompraDTO> create(@RequestBody CrearOrdenCompraDTO dto) {
+        return ResponseEntity.ok(ordenCompraService.saveOrdenCompra(dto));
     }
 
     @PutMapping("/{id}")

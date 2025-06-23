@@ -14,10 +14,10 @@ public class OrdenCompraDTO {
     private LocalDate fechaCreacionOrdenCompra;
     private LocalDate fechaModificacionOrdenCompra;
     private EstadoOrden estadoOrden;
-    private Long articuloId; // Solo el ID en lugar del objeto completo
-    private String articuloNombre; // Nombre del artículo para mostrar
+    private Long articuloId; 
+    private String articuloNombre; 
     private float montoTotal;
     private int cantidad;
-    private Long proveedorId; // Solo el ID en lugar del objeto completo
-    private String proveedorNombre; // Nombre del proveedor para mostrar
+    private Long proveedorId; 
+    private String proveedorNombre; 
 }

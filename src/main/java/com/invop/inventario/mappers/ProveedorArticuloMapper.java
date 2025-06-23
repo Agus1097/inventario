@@ -1,8 +1,6 @@
 package com.invop.inventario.mappers;
 
 import com.invop.inventario.dto.ProveedorArticuloDTO;
-import com.invop.inventario.dto.ProveedorDTO;
-import com.invop.inventario.entities.Proveedor;
 import com.invop.inventario.entities.ProveedorArticulo;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
