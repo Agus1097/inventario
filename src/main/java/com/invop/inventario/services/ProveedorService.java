@@ -1,5 +1,6 @@
 package com.invop.inventario.services;
 
+import com.invop.inventario.dto.ProveedorArticuloDTO;
 import com.invop.inventario.dto.ProveedorDTO;
 import com.invop.inventario.dto.ProveedorSimpleDTO;
 import com.invop.inventario.entities.Articulo;
@@ -71,63 +72,43 @@ public class ProveedorService {
     }
 
     @Transactional
-    public ProveedorDTO updateProveedor(Long id, Proveedor proveedorDetails) {
+    public ProveedorDTO updateProveedor(Long id, ProveedorDTO proveedorDTO) {
         Proveedor proveedor = findById(id);
 
-        proveedor.setNombre(proveedorDetails.getNombre());
+        if (proveedorDTO.getNombre() != null) {
+            proveedor.setNombre(proveedorDTO.getNombre());
+        }
 
-        // Actualizar o agregar ProveedorArticulo según corresponda
-        for (ProveedorArticulo paNuevo : proveedorDetails.getProveedorArticulos()) {
-            if (paNuevo.getArticulo() == null) {
-                throw new IllegalArgumentException("Cada ProveedorArticulo debe estar asociado a un Articulo.");
-            }
-            if (paNuevo.getTipoModelo() == null) {
-                throw new IllegalArgumentException("Cada ProveedorArticulo debe tener un TipoModelo.");
-            }
-            if (paNuevo.getDemoraEntrega() <= 0) {
-                throw new IllegalArgumentException("La demora de entrega debe ser mayor a 0.");
-            }
-            if (paNuevo.getPrecioUnitario() <= 0) {
-                throw new IllegalArgumentException("El precio unitario debe ser mayor a 0.");
-            }
-            if (paNuevo.getCargosPedido() < 0) {
-                throw new IllegalArgumentException("Los cargos de pedido no pueden ser negativos.");
-            }
-            if (paNuevo.getTiempoRevision() <= 0) {
-                throw new IllegalArgumentException("El tiempo de revisión debe ser mayor a 0.");
-            }
+        if (proveedorDTO.getProveedorArticulos() != null) {
+            for (ProveedorArticuloDTO paDTO : proveedorDTO.getProveedorArticulos()) {
+                if (paDTO.getArticulo() == null || paDTO.getArticulo().getId() == null) continue;
 
-            // Buscar si ya existe un ProveedorArticulo para ese Articulo
-            ProveedorArticulo existente = proveedor.getProveedorArticulos().stream()
-                    .filter(pa -> pa.getArticulo().getId().equals(paNuevo.getArticulo().getId()))
-                    .findFirst()
-                    .orElse(null);
+                Articulo articulo = articuloService.findById(paDTO.getArticulo().getId());
+                Optional<ProveedorArticulo> existenteOpt = proveedorArticuloRepository.findByArticuloAndProveedor(articulo, proveedor);
 
-            if (existente != null) {
-                // Actualizar los valores del existente
-                existente.setDemoraEntrega(paNuevo.getDemoraEntrega());
-                existente.setPrecioUnitario(paNuevo.getPrecioUnitario());
-                existente.setCargosPedido(paNuevo.getCargosPedido());
-                existente.setTiempoRevision(paNuevo.getTiempoRevision());
-                existente.setTipoModelo(paNuevo.getTipoModelo());
-            } else {
-                // Agregar el nuevo ProveedorArticulo
-                proveedor.getProveedorArticulos().add(paNuevo);
-            }
-
-            // Setear proveedorPredeterminado si corresponde
-            if (paNuevo.getArticulo().getProveedorPredeterminado() == null) {
-                paNuevo.getArticulo().setProveedorPredeterminado(proveedor);
+                if (existenteOpt.isPresent()) {
+                    ProveedorArticulo existente = existenteOpt.get();
+                    if (paDTO.getDemoraEntrega() != null) existente.setDemoraEntrega(paDTO.getDemoraEntrega());
+                    if (paDTO.getPrecioUnitario() != null) existente.setPrecioUnitario(paDTO.getPrecioUnitario());
+                    if (paDTO.getCargosPedido() != null) existente.setCargosPedido(paDTO.getCargosPedido());
+                    if (paDTO.getTiempoRevision() != null) existente.setTiempoRevision(paDTO.getTiempoRevision());
+                    if (paDTO.getTipoModelo() != null) existente.setTipoModelo(paDTO.getTipoModelo());
+                } else {
+                    // Si no existe, lo crea y lo agrega al proveedor
+                    ProveedorArticulo nuevo = new ProveedorArticulo();
+                    nuevo.setProveedor(proveedor);
+                    nuevo.setArticulo(articulo);
+                    nuevo.setDemoraEntrega(paDTO.getDemoraEntrega());
+                    nuevo.setPrecioUnitario(paDTO.getPrecioUnitario());
+                    nuevo.setCargosPedido(paDTO.getCargosPedido());
+                    nuevo.setTiempoRevision(paDTO.getTiempoRevision());
+                    nuevo.setTipoModelo(paDTO.getTipoModelo());
+                    proveedor.getProveedorArticulos().add(nuevo);
+                }
             }
         }
 
-        // Eliminar ProveedorArticulo que ya no estén en la nueva lista
-        proveedor.getProveedorArticulos().removeIf(paExistente ->
-                proveedorDetails.getProveedorArticulos().stream()
-                        .noneMatch(paNuevo -> paNuevo.getArticulo().getId().equals(paExistente.getArticulo().getId()))
-        );
         proveedorRepository.save(proveedor);
-
         return proveedorMapper.toDto(proveedor);
     }
 

@@ -13,19 +13,19 @@ import lombok.NoArgsConstructor;
 public class ProveedorArticuloDTO {
 
     @Positive(message = "La demora de entrega debe ser mayor que 0")
-    private int demoraEntrega;
+    private Integer demoraEntrega;
 
     @Positive(message = "El precio unitario debe ser mayor que 0")
-    private float precioUnitario;
+    private Float precioUnitario;
 
     @Positive(message = "Los cargos del pedido deben ser mayores que 0")
-    private float cargosPedido;
+    private Float cargosPedido;
 
     @NotNull(message = "El artículo no puede ser nulo")
     private ArticuloDatoDTO articulo;
 
     @Positive(message = "El tiempo de revisión debe ser mayor que 0")
-    private float tiempoRevision;
+    private Float tiempoRevision;
 
     @NotNull(message = "El tipo de modelo no puede ser nulo")
     private TipoModelo tipoModelo;
