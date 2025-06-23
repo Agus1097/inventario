@@ -71,6 +71,8 @@ public class ProveedorService {
         proveedorRepository.save(proveedor);
     }
 
+    //TODO FALTA AGREGAR QUE SETEE PROVEDOR PREDETERMINADO EN ARTICULO SI ES LA PRIMERA VEZ QUE SE AGREGA UN PROVEEDOR PARA ESE ARTICULO
+    //LO AGREGUE PERO FALTA REVISAR QUE NO SE ROMPA NADA
     @Transactional
     public ProveedorDTO updateProveedor(Long id, ProveedorDTO proveedorDTO) {
         Proveedor proveedor = findById(id);
@@ -104,10 +106,19 @@ public class ProveedorService {
                     nuevo.setTiempoRevision(paDTO.getTiempoRevision());
                     nuevo.setTipoModelo(paDTO.getTipoModelo());
                     proveedor.getProveedorArticulos().add(nuevo);
+
+                    if (Objects.isNull(articulo.getProveedorPredeterminado())) {
+                        articulo.setProveedorPredeterminado(proveedor);
+                        articulo.calcularStockSeguridad(nuevo.getDemoraEntrega(), nuevo.getTiempoRevision(), nuevo.getTipoModelo());
+                        articulo.calcularLoteOptimo(nuevo.getCargosPedido(), nuevo.getTipoModelo(), nuevo.getDemoraEntrega(), nuevo.getTiempoRevision());
+                        articulo.calcularPuntoPedido(nuevo.getDemoraEntrega());
+                        articulo.calcularInventarioMaximo();
+                        articulo.calcularCGI(nuevo.getPrecioUnitario(), nuevo.getCargosPedido());
+                        articuloRepository.save(articulo);
+                    }
                 }
             }
         }
-
         proveedorRepository.save(proveedor);
         return proveedorMapper.toDto(proveedor);
     }
