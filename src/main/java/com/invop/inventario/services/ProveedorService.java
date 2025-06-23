@@ -1,6 +1,7 @@
 package com.invop.inventario.services;
 
 import com.invop.inventario.dto.ProveedorDTO;
+import com.invop.inventario.dto.ProveedorSimpleDTO;
 import com.invop.inventario.entities.Articulo;
 import com.invop.inventario.entities.EstadoOrden;
 import com.invop.inventario.entities.Proveedor;
@@ -8,6 +9,7 @@ import com.invop.inventario.entities.ProveedorArticulo;
 import com.invop.inventario.mappers.ProveedorMapper;
 import com.invop.inventario.repositories.ArticuloRepository;
 import com.invop.inventario.repositories.OrdenCompraRepository;
+import com.invop.inventario.repositories.ProveedorArticuloRepository;
 import com.invop.inventario.repositories.ProveedorRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -26,6 +28,7 @@ public class ProveedorService {
     private final ArticuloRepository articuloRepository;
     private final ProveedorMapper proveedorMapper;
     private final ArticuloService articuloService;
+    private final ProveedorArticuloRepository proveedorArticuloRepository;
 
     public List<ProveedorDTO> findAll() {
         return proveedorMapper.toDtoList(proveedorRepository.findByFechaBajaProveedorIsNull());
@@ -182,7 +185,14 @@ public class ProveedorService {
         return resultado;
     }
 
-    private void calcularProveedorPredeterminado() {
-
+    public List<ProveedorSimpleDTO> findProveedoresByArticuloId(Long articuloId) {
+        List<Proveedor> proveedores = proveedorArticuloRepository.findProveedoresByArticuloId(articuloId);
+        return proveedores.stream().map(proveedor -> {
+            ProveedorSimpleDTO dto = new ProveedorSimpleDTO();
+            dto.setId(proveedor.getId());
+            dto.setNombreProveedor(proveedor.getNombre());
+            return dto;
+        }).toList();
     }
+
 }

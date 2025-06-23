@@ -1,6 +1,7 @@
 package com.invop.inventario.controllers;
 
 import com.invop.inventario.dto.ProveedorDTO;
+import com.invop.inventario.dto.ProveedorSimpleDTO;
 import com.invop.inventario.entities.Proveedor;
 import com.invop.inventario.mappers.ProveedorMapper;
 import com.invop.inventario.services.ProveedorService;
@@ -52,5 +53,10 @@ public class ProveedorController {
     @GetMapping("/{proveedorId}/articulos")
     public List<Map<String, Object>> getArticulosPorProveedor(@PathVariable Long proveedorId) {
         return proveedorService.getArticulosPorProveedor(proveedorId);
+    }
+
+    @GetMapping("/articulo/{articuloId}")
+    public List<ProveedorSimpleDTO> getProveedoresByArticulo(@PathVariable Long articuloId) {
+        return proveedorService.findProveedoresByArticuloId(articuloId);
     }
 }
