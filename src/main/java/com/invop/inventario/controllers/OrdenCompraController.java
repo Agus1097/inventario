@@ -29,8 +29,12 @@ public class OrdenCompraController {
     }
 
     @PostMapping
-    public ResponseEntity<OrdenCompraDTO> create(@RequestBody CrearOrdenCompraDTO dto) {
-        return ResponseEntity.ok(ordenCompraService.saveOrdenCompra(dto));
+    public ResponseEntity<?> create(@RequestBody CrearOrdenCompraDTO dto) {
+        try {
+            return ResponseEntity.ok(ordenCompraService.saveOrdenCompra(dto));
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
