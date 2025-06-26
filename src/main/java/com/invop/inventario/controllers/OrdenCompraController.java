@@ -1,6 +1,7 @@
 package com.invop.inventario.controllers;
 
 import com.invop.inventario.dto.CrearOrdenCompraDTO;
+import com.invop.inventario.dto.ErrorDTO;
 import com.invop.inventario.dto.OrdenCompraDTO;
 import com.invop.inventario.entities.OrdenCompra;
 import com.invop.inventario.services.OrdenCompraService;
@@ -33,7 +34,7 @@ public class OrdenCompraController {
         try {
             return ResponseEntity.ok(ordenCompraService.saveOrdenCompra(dto));
         } catch (Exception ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
+            return ResponseEntity.badRequest().body(new ErrorDTO(ex.getMessage()));
         }
     }
 
@@ -42,7 +43,7 @@ public class OrdenCompraController {
         try {
             return ResponseEntity.ok(ordenCompraService.updateOrdenCompra(id, ordenCompra));
         } catch (Exception ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
+            return ResponseEntity.badRequest().body(new ErrorDTO(ex.getMessage()));
         }
     }
 
