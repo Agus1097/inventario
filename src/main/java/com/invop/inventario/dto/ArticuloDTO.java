@@ -64,5 +64,5 @@ public class ArticuloDTO {
 
     private int puntoPedido;
 
-    private float cgi;
+    private float CGI;
 }

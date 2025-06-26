@@ -34,8 +34,12 @@ public class OrdenCompraController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<OrdenCompraDTO> update(@PathVariable Long id, @RequestBody OrdenCompra ordenCompra) {
-        return ResponseEntity.ok(ordenCompraService.updateOrdenCompra(id, ordenCompra));
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody OrdenCompra ordenCompra) {
+        try {
+            return ResponseEntity.ok(ordenCompraService.updateOrdenCompra(id, ordenCompra));
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
