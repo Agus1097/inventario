@@ -1,10 +1,15 @@
 package com.invop.inventario.controllers;
 
+import com.invop.inventario.dto.BorrarProveedorArticuloDTO;
+import com.invop.inventario.dto.ProveedorArticuloDTO;
 import com.invop.inventario.dto.ProveedorDTO;
 import com.invop.inventario.dto.ProveedorSimpleDTO;
 import com.invop.inventario.entities.Proveedor;
+import com.invop.inventario.entities.ProveedorArticulo;
 import com.invop.inventario.mappers.ProveedorMapper;
 import com.invop.inventario.services.ProveedorService;
+
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +49,7 @@ public class ProveedorController {
         return ResponseEntity.ok(proveedorService.updateProveedor(id, proveedorDTO));
     }
 
-    @PutMapping("/baja/{id}")
+    @PutMapping("/{id}/baja")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         proveedorService.deleteById(id);
         return ResponseEntity.ok().build();
@@ -58,5 +63,17 @@ public class ProveedorController {
     @GetMapping("/articulo/{articuloId}")
     public List<ProveedorSimpleDTO> getProveedoresByArticulo(@PathVariable Long articuloId) {
         return proveedorService.findProveedoresByArticuloId(articuloId);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> borrarProveedorArticulo(@RequestBody BorrarProveedorArticuloDTO dto) {
+        try {
+            proveedorService.borrarProveedorArticulo(dto.getIdArticulo(), dto.getIdProveedor());
+            return ResponseEntity.ok(dto);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

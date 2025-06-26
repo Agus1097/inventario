@@ -187,4 +187,22 @@ public class ProveedorService {
         }).toList();
     }
 
+    public ProveedorArticulo borrarProveedorArticulo(Long idArticulo, Long idProveedor) {
+        Articulo articulo = articuloService.findById(idArticulo);
+        Proveedor proveedor = findById(idProveedor);
+
+        if (articulo.getProveedorPredeterminado() != null &&
+            articulo.getProveedorPredeterminado().getId().equals(idProveedor)) {
+            throw new IllegalArgumentException("No se puede eliminar el proveedor porque es el predeterminado del artículo.");
+        }
+
+        Optional<ProveedorArticulo> paOpt = proveedorArticuloRepository.findByArticuloAndProveedor(articulo, proveedor);
+        if (paOpt.isPresent()) {
+            ProveedorArticulo eliminado = paOpt.get();
+            proveedorArticuloRepository.delete(eliminado);
+            return eliminado;
+        }
+        throw new EntityNotFoundException("No existe ProveedorArticulo para ese proveedor y artículo.");
+    }
+
 }

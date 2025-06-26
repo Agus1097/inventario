@@ -1,7 +1,9 @@
 package com.invop.inventario.mappers;
 
+import com.invop.inventario.dto.ProveedorArticuloDTO;
 import com.invop.inventario.dto.ProveedorDTO;
 import com.invop.inventario.entities.Proveedor;
+import com.invop.inventario.entities.ProveedorArticulo;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -23,4 +25,6 @@ public interface ProveedorMapper {
     List<ProveedorDTO> toDtoList(List<Proveedor> proveedores);
 
     List<Proveedor> toEntityList(List<ProveedorDTO> dtos);
+
+    ProveedorArticuloDTO toProveedorArticuloDTO(ProveedorArticulo entity);
 }
