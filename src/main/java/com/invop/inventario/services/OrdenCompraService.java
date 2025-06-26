@@ -111,7 +111,7 @@ public class OrdenCompraService {
                 // Actualizar stockActual del artículo
                 Articulo articulo = articuloService.findById(ordenCompra.getArticulo().getId());
                 articulo.setStockActual(articulo.getStockActual() + ordenCompra.getCantidad());
-                articuloService.save(articulo);
+                articuloService.saveUpdate(articulo);
 
                 // Informar si el stockActual no supera el puntoPedido
                 if (articulo.getStockActual() <= articulo.getPuntoPedido()) {

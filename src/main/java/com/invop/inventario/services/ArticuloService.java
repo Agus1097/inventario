@@ -65,6 +65,11 @@ public class ArticuloService {
         articuloRepository.save(articulo);
     }
 
+    @Transactional
+    public void saveUpdate(Articulo articulo) {
+        articuloRepository.save(articulo);
+    }
+
     public Articulo findById(Long id) {
         Articulo articulo = articuloRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("El artículo no existe"));
