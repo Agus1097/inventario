@@ -70,7 +70,7 @@ public class Articulo {
         calcularStockSeguridad(demoraEntrega, tiempoRevision, tipoModelo);
         calcularLoteOptimo(costoPedido, tipoModelo, demoraEntrega, tiempoRevision);
         calcularPuntoPedido(demoraEntrega, tipoModelo);
-        calcularInventarioMaximo();
+        calcularInventarioMaximo(tipoModelo);
         calcularCGI(precioUnitario, costoPedido);
     }
 
@@ -120,8 +120,13 @@ public class Articulo {
         
     }
 
-    public void calcularInventarioMaximo() {
+    public void calcularInventarioMaximo(TipoModelo tipoModelo) {
         // Cantidad * ( 1 - demandaDiaria/producciondiaria)
-        this.inventarioMaximo = (int) (this.loteOptimo * (1 - this.demandaArticulo / 365 / this.produccionDiaria));
+        if (Objects.equals(tipoModelo, TipoModelo.INTERVALO_FIJO)) {
+            this.inventarioMaximo = (int) (this.loteOptimo * (1 - this.demandaArticulo / 365 / this.produccionDiaria));
+        } else {
+            this.inventarioMaximo = 0;
+        }
+        
     }
 }

@@ -181,12 +181,15 @@ public class ProveedorService {
 
     public List<ProveedorSimpleDTO> findProveedoresByArticuloId(Long articuloId) {
         List<Proveedor> proveedores = proveedorArticuloRepository.findProveedoresByArticuloId(articuloId);
-        return proveedores.stream().map(proveedor -> {
-            ProveedorSimpleDTO dto = new ProveedorSimpleDTO();
-            dto.setId(proveedor.getId());
-            dto.setNombreProveedor(proveedor.getNombre());
-            return dto;
-        }).toList();
+        return proveedores.stream()
+                .filter(proveedor -> proveedor.getFechaBajaProveedor() == null)
+                .map(proveedor -> {
+                    ProveedorSimpleDTO dto = new ProveedorSimpleDTO();
+                    dto.setId(proveedor.getId());
+                    dto.setNombreProveedor(proveedor.getNombre());
+                    return dto;
+                })
+                .toList();
     }
 
     public ProveedorArticulo borrarProveedorArticulo(Long idArticulo, Long idProveedor) {
