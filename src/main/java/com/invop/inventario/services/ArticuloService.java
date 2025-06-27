@@ -42,7 +42,7 @@ public class ArticuloService {
     }
 
     public List<ArticuloDatoDTO> getAllArticuloDatoDTO() {
-        List<Articulo> articulos = articuloRepository.findAll();
+        List<Articulo> articulos = articuloRepository.findByFechaBajaArticuloIsNull();
         return articuloMapper.toDtoList(articulos);
     }
 

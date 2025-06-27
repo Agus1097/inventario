@@ -21,4 +21,6 @@ public interface ArticuloRepository extends JpaRepository<Articulo, Long> {
     List<Articulo> findArticulosAReponer();
 
     Page<Articulo> findByFechaBajaArticuloIsNull(Pageable pageable);
+
+    List<Articulo> findByFechaBajaArticuloIsNull();
 }
