@@ -2,6 +2,7 @@ package com.invop.inventario.services;
 
 import com.invop.inventario.dto.ArticuloDTO;
 import com.invop.inventario.dto.ArticuloDatoDTO;
+import com.invop.inventario.dto.ArticuloOrdenDTO;
 import com.invop.inventario.dto.EditarArticuloDTO;
 import com.invop.inventario.entities.Articulo;
 import com.invop.inventario.entities.EstadoOrden;
@@ -13,7 +14,6 @@ import com.invop.inventario.repositories.OrdenCompraRepository;
 import com.invop.inventario.repositories.ProveedorArticuloRepository;
 import com.invop.inventario.repositories.ProveedorRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -172,5 +172,21 @@ public class ArticuloService {
                 .filter(a -> a.getStockActual() <= a.getStockSeguridad())
                 .toList();
         return articuloMapper.toArticuloDtoList(articulos);
+    }
+
+    public List<ArticuloOrdenDTO> getArticulosOrdenDTO() {
+        List<Articulo> articulos = articuloRepository.findByFechaBajaArticuloIsNull();
+        return articulos.stream().map(a -> {
+            ArticuloOrdenDTO dto = new ArticuloOrdenDTO();
+            dto.setIdArticulo(a.getId());
+            dto.setCodArticulo(a.getCodArticulo());
+            dto.setNombreArticulo(a.getNombre());
+            if (a.getProveedorPredeterminado() != null) {
+                dto.setIdProveedorPredeterminado(a.getProveedorPredeterminado().getId());
+                dto.setNombreProveedorPredeterminado(a.getProveedorPredeterminado().getNombre());
+            }
+            dto.setLoteOptimo(a.getLoteOptimo());
+            return dto;
+        }).toList();
     }
 }

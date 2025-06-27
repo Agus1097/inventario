@@ -29,6 +29,8 @@ public class ArticuloController {
         }
     }
 
+    
+
     @GetMapping("/a-asignar")
     public ResponseEntity<?> getAllArticuloDatoDTO() {
         try {
@@ -100,6 +102,15 @@ public class ArticuloController {
     public ResponseEntity<?> getArticulosFaltantes() {
         try {
             return ResponseEntity.ok(articuloService.getArticulosFaltantes());
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(new ErrorDTO(ex.getMessage()));
+        }
+    }
+
+    @GetMapping("/orden")
+    public ResponseEntity<?> getArticulosParaOrden() {
+        try {
+            return ResponseEntity.ok(articuloService.getArticulosOrdenDTO());
         } catch (Exception ex) {
             return ResponseEntity.badRequest().body(new ErrorDTO(ex.getMessage()));
         }
