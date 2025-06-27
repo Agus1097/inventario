@@ -118,6 +118,15 @@ public class OrdenCompraService {
                 // Actualizar stockActual del artículo
                 Articulo articulo = articuloService.findById(ordenCompra.getArticulo().getId());
                 articulo.setStockActual(articulo.getStockActual() + ordenCompra.getCantidad());
+                Proveedor proveedor = articulo.getProveedorPredeterminado();
+                if (proveedor != null) {
+            
+                ProveedorArticulo pa = proveedorArticuloRepository
+                    .findByArticuloAndProveedor(articulo, proveedor)
+                    .orElseThrow(() -> new EntityNotFoundException("No existe relación Proveedor-Articulo para este artículo y proveedor"));
+
+                articulo.calcularTodo(pa.getPrecioUnitario(), pa.getCargosPedido(), pa.getDemoraEntrega(), pa.getTiempoRevision(),pa.getTipoModelo());
+        }
                 articuloService.saveUpdate(articulo);
             }
         } else if (EstadoOrden.FINALIZADO.equals(estadoActual) || EstadoOrden.CANCELADO.equals(estadoActual)) {

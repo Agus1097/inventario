@@ -5,6 +5,7 @@ import com.invop.inventario.dto.VentaResponseDTO;
 import com.invop.inventario.entities.Articulo;
 import com.invop.inventario.entities.EstadoOrden;
 import com.invop.inventario.entities.OrdenCompra;
+import com.invop.inventario.entities.Proveedor;
 import com.invop.inventario.entities.ProveedorArticulo;
 import com.invop.inventario.entities.TipoModelo;
 import com.invop.inventario.entities.Venta;
@@ -56,6 +57,15 @@ public class VentaService {
 
         // Actualizar stock
         articulo.setStockActual(articulo.getStockActual() - dto.getCantidad());
+        Proveedor proveedor = articulo.getProveedorPredeterminado();
+        if (proveedor != null) {
+            // Actualizar stock del proveedor si es necesario
+            ProveedorArticulo pa = proveedorArticuloRepository
+                    .findByArticuloAndProveedor(articulo, proveedor)
+                    .orElseThrow(() -> new EntityNotFoundException("No existe relación Proveedor-Articulo para este artículo y proveedor"));
+
+            articulo.calcularTodo(pa.getPrecioUnitario(), pa.getCargosPedido(), pa.getDemoraEntrega(), pa.getTiempoRevision(),pa.getTipoModelo());
+        }
         articuloRepository.save(articulo);
 
         // Crear entidad Venta
