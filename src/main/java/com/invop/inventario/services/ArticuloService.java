@@ -176,17 +176,18 @@ public class ArticuloService {
 
     public List<ArticuloOrdenDTO> getArticulosOrdenDTO() {
         List<Articulo> articulos = articuloRepository.findByFechaBajaArticuloIsNull();
-        return articulos.stream().map(a -> {
-            ArticuloOrdenDTO dto = new ArticuloOrdenDTO();
-            dto.setIdArticulo(a.getId());
-            dto.setCodArticulo(a.getCodArticulo());
-            dto.setNombreArticulo(a.getNombre());
-            if (a.getProveedorPredeterminado() != null) {
-                dto.setIdProveedorPredeterminado(a.getProveedorPredeterminado().getId());
-                dto.setNombreProveedorPredeterminado(a.getProveedorPredeterminado().getNombre());
-            }
-            dto.setLoteOptimo(a.getLoteOptimo());
-            return dto;
-        }).toList();
+        return articulos.stream()
+                .filter(a -> a.getProveedorPredeterminado() != null)
+                .map(a -> {
+                    ArticuloOrdenDTO dto = new ArticuloOrdenDTO();
+                    dto.setIdArticulo(a.getId());
+                    dto.setCodArticulo(a.getCodArticulo());
+                    dto.setNombreArticulo(a.getNombre());
+                    dto.setIdProveedorPredeterminado(a.getProveedorPredeterminado().getId());
+                    dto.setNombreProveedorPredeterminado(a.getProveedorPredeterminado().getNombre());
+                    dto.setLoteOptimo(a.getLoteOptimo());
+                    return dto;
+                })
+                .toList();
     }
 }
