@@ -71,7 +71,6 @@ public class Articulo {
         this.CGI = this.demandaArticulo * precioUnitario + this.demandaArticulo / this.loteOptimo * costoPedido + this.costoAlmacenamiento * this.loteOptimo / 2;
     }
 
-    ;
 
     public void calcularStockSeguridad(int demoraEntrega, float tiempoRevision, TipoModelo tipoModelo) {
         //periodo fijo

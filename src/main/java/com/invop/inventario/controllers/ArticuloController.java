@@ -1,17 +1,14 @@
 package com.invop.inventario.controllers;
 
 import com.invop.inventario.dto.ArticuloDTO;
-import com.invop.inventario.dto.ArticuloDatoDTO;
 import com.invop.inventario.dto.EditarArticuloDTO;
 import com.invop.inventario.dto.ProveedorPredeterminadoDTO;
 import com.invop.inventario.services.ArticuloService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/articulos")
@@ -22,52 +19,88 @@ public class ArticuloController {
     private ArticuloService articuloService;
 
     @GetMapping
-    public Page<ArticuloDTO> getAll(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<?> getAll(@RequestParam(defaultValue = "0") int page,
                                     @RequestParam(defaultValue = "10") int size) {
-        return articuloService.findAll(page, size);
+        try {
+            return ResponseEntity.ok(articuloService.findAll(page, size));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/a-asignar")
-    public List<ArticuloDatoDTO> getAllArticuloDatoDTO() {
-        return articuloService.getAllArticuloDatoDTO();
+    public ResponseEntity<?> getAllArticuloDatoDTO() {
+        try {
+            return ResponseEntity.ok(articuloService.getAllArticuloDatoDTO());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ArticuloDTO> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(articuloService.getById(id));
+    public ResponseEntity<?> getById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(articuloService.getById(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody ArticuloDTO dto) {
-        articuloService.saveArticulo(dto);
-        return ResponseEntity.ok().build();
+        try {
+            articuloService.saveArticulo(dto);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody EditarArticuloDTO dto) {
-        articuloService.updateArticulo(id, dto);
-        return ResponseEntity.ok("Actualizado");
+        try {
+            articuloService.updateArticulo(id, dto);
+            return ResponseEntity.ok("Actualizado");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/baja/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
-        articuloService.deleteById(id);
-        return ResponseEntity.ok().build();
+        try {
+            articuloService.deleteById(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/{id}/proveedor-predeterminado")
     public ResponseEntity<?> setProveedorPredeterminado(@PathVariable Long id, @RequestBody ProveedorPredeterminadoDTO dto) {
-        articuloService.setProveedorPredeterminado(id, dto.getProveedorId());
-        return ResponseEntity.ok().build();
+        try {
+            articuloService.setProveedorPredeterminado(id, dto.getProveedorId());
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/a-reponer")
-    public List<ArticuloDTO> getArticulosAReponer() {
-        return articuloService.getArticulosAReponer();
+    public ResponseEntity<?> getArticulosAReponer() {
+        try {
+            return ResponseEntity.ok(articuloService.getArticulosAReponer());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/faltantes")
-    public List<ArticuloDTO> getArticulosFaltantes() {
-        return articuloService.getArticulosFaltantes();
+    public ResponseEntity<?> getArticulosFaltantes() {
+        try {
+            return ResponseEntity.ok(articuloService.getArticulosFaltantes());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

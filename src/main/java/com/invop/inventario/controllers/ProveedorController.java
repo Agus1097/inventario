@@ -29,40 +29,68 @@ public class ProveedorController {
     private ProveedorMapper proveedorMapper;
 
     @GetMapping
-    public List<ProveedorDTO> getAll() {
-        return proveedorService.findAll();
+    public ResponseEntity<?> getAll() {
+        try {
+            return ResponseEntity.ok(proveedorService.findAll());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProveedorDTO> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(proveedorMapper.toDto(proveedorService.findById(id)));
+    public ResponseEntity<?> getById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(proveedorMapper.toDto(proveedorService.findById(id)));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody ProveedorDTO proveedorDTO) {
-        proveedorService.saveProveedor(proveedorDTO);
-        return ResponseEntity.ok().build();
+        try {
+            proveedorService.saveProveedor(proveedorDTO);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProveedorDTO> update(@PathVariable Long id, @Valid @RequestBody ProveedorDTO proveedorDTO) {
-        return ResponseEntity.ok(proveedorService.updateProveedor(id, proveedorDTO));
+    public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody ProveedorDTO proveedorDTO) {
+        try {
+            return ResponseEntity.ok(proveedorService.updateProveedor(id, proveedorDTO));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/{id}/baja")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        proveedorService.deleteById(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        try {
+            proveedorService.deleteById(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/{proveedorId}/articulos")
-    public List<Map<String, Object>> getArticulosPorProveedor(@PathVariable Long proveedorId) {
-        return proveedorService.getArticulosPorProveedor(proveedorId);
+    public ResponseEntity<?> getArticulosPorProveedor(@PathVariable Long proveedorId) {
+        try {
+            return ResponseEntity.ok(proveedorService.getArticulosPorProveedor(proveedorId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/articulo/{articuloId}")
-    public List<ProveedorSimpleDTO> getProveedoresByArticulo(@PathVariable Long articuloId) {
-        return proveedorService.findProveedoresByArticuloId(articuloId);
+    public ResponseEntity<?> getProveedoresByArticulo(@PathVariable Long articuloId) {
+        try {
+            return ResponseEntity.ok(proveedorService.findProveedoresByArticuloId(articuloId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping

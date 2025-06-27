@@ -19,30 +19,50 @@ public class VentaController {
     private VentaService ventaService;
 
     @GetMapping
-    public List<VentaResponseDTO> getAll() {
-        return ventaService.findAll();
+    public ResponseEntity<?> getAll() {
+        try {
+            return ResponseEntity.ok(ventaService.findAll());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<VentaResponseDTO> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(ventaService.findById(id));
+    public ResponseEntity<?> getById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(ventaService.findById(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping
-    public ResponseEntity<Venta> create(@RequestBody CrearVentaDTO dto) {
-        ventaService.saveVenta(dto);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> create(@RequestBody CrearVentaDTO dto) {
+        try {
+            ventaService.saveVenta(dto);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Venta> update(@PathVariable Long id, @RequestBody Venta venta) {
-        ventaService.updateVenta(id, venta);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Venta venta) {
+        try {
+            ventaService.updateVenta(id, venta);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        ventaService.deleteById(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        try {
+            ventaService.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
