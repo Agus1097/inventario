@@ -1,11 +1,8 @@
 package com.invop.inventario.controllers;
 
 import com.invop.inventario.dto.BorrarProveedorArticuloDTO;
-import com.invop.inventario.dto.ProveedorArticuloDTO;
+import com.invop.inventario.dto.ErrorDTO;
 import com.invop.inventario.dto.ProveedorDTO;
-import com.invop.inventario.dto.ProveedorSimpleDTO;
-import com.invop.inventario.entities.Proveedor;
-import com.invop.inventario.entities.ProveedorArticulo;
 import com.invop.inventario.mappers.ProveedorMapper;
 import com.invop.inventario.services.ProveedorService;
 
@@ -15,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/proveedores")
@@ -33,7 +28,7 @@ public class ProveedorController {
         try {
             return ResponseEntity.ok(proveedorService.findAll());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
         }
     }
 
@@ -42,7 +37,7 @@ public class ProveedorController {
         try {
             return ResponseEntity.ok(proveedorMapper.toDto(proveedorService.findById(id)));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
         }
     }
 
@@ -52,7 +47,7 @@ public class ProveedorController {
             proveedorService.saveProveedor(proveedorDTO);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
         }
     }
 
@@ -61,7 +56,7 @@ public class ProveedorController {
         try {
             return ResponseEntity.ok(proveedorService.updateProveedor(id, proveedorDTO));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
         }
     }
 
@@ -71,7 +66,7 @@ public class ProveedorController {
             proveedorService.deleteById(id);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
         }
     }
 
@@ -80,7 +75,7 @@ public class ProveedorController {
         try {
             return ResponseEntity.ok(proveedorService.getArticulosPorProveedor(proveedorId));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
         }
     }
 
@@ -89,7 +84,7 @@ public class ProveedorController {
         try {
             return ResponseEntity.ok(proveedorService.findProveedoresByArticuloId(articuloId));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
         }
     }
 
@@ -99,9 +94,9 @@ public class ProveedorController {
             proveedorService.borrarProveedorArticulo(dto.getIdArticulo(), dto.getIdProveedor());
             return ResponseEntity.ok(dto);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
         }
     }
 }

@@ -2,6 +2,7 @@ package com.invop.inventario.controllers;
 
 import com.invop.inventario.dto.ArticuloDTO;
 import com.invop.inventario.dto.EditarArticuloDTO;
+import com.invop.inventario.dto.ErrorDTO;
 import com.invop.inventario.dto.ProveedorPredeterminadoDTO;
 import com.invop.inventario.services.ArticuloService;
 import jakarta.validation.Valid;
@@ -23,8 +24,8 @@ public class ArticuloController {
                                     @RequestParam(defaultValue = "10") int size) {
         try {
             return ResponseEntity.ok(articuloService.findAll(page, size));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(new ErrorDTO(ex.getMessage()));
         }
     }
 
@@ -32,8 +33,8 @@ public class ArticuloController {
     public ResponseEntity<?> getAllArticuloDatoDTO() {
         try {
             return ResponseEntity.ok(articuloService.getAllArticuloDatoDTO());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(new ErrorDTO(ex.getMessage()));
         }
     }
 
@@ -41,8 +42,8 @@ public class ArticuloController {
     public ResponseEntity<?> getById(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(articuloService.getById(id));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(new ErrorDTO(ex.getMessage()));
         }
     }
 
@@ -51,8 +52,8 @@ public class ArticuloController {
         try {
             articuloService.saveArticulo(dto);
             return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(new ErrorDTO(ex.getMessage()));
         }
     }
 
@@ -61,8 +62,8 @@ public class ArticuloController {
         try {
             articuloService.updateArticulo(id, dto);
             return ResponseEntity.ok("Actualizado");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(new ErrorDTO(ex.getMessage()));
         }
     }
 
@@ -71,8 +72,8 @@ public class ArticuloController {
         try {
             articuloService.deleteById(id);
             return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(new ErrorDTO(ex.getMessage()));
         }
     }
 
@@ -81,8 +82,8 @@ public class ArticuloController {
         try {
             articuloService.setProveedorPredeterminado(id, dto.getProveedorId());
             return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(new ErrorDTO(ex.getMessage()));
         }
     }
 
@@ -90,8 +91,8 @@ public class ArticuloController {
     public ResponseEntity<?> getArticulosAReponer() {
         try {
             return ResponseEntity.ok(articuloService.getArticulosAReponer());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(new ErrorDTO(ex.getMessage()));
         }
     }
 
@@ -99,8 +100,8 @@ public class ArticuloController {
     public ResponseEntity<?> getArticulosFaltantes() {
         try {
             return ResponseEntity.ok(articuloService.getArticulosFaltantes());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(new ErrorDTO(ex.getMessage()));
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.invop.inventario.controllers;
 
 import com.invop.inventario.dto.CrearVentaDTO;
+import com.invop.inventario.dto.ErrorDTO;
 import com.invop.inventario.dto.VentaResponseDTO;
 import com.invop.inventario.entities.Venta;
 import com.invop.inventario.services.VentaService;
@@ -23,7 +24,7 @@ public class VentaController {
         try {
             return ResponseEntity.ok(ventaService.findAll());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
         }
     }
 
@@ -32,7 +33,7 @@ public class VentaController {
         try {
             return ResponseEntity.ok(ventaService.findById(id));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
         }
     }
 
@@ -42,7 +43,7 @@ public class VentaController {
             ventaService.saveVenta(dto);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
         }
     }
 
@@ -52,7 +53,7 @@ public class VentaController {
             ventaService.updateVenta(id, venta);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
         }
     }
 
@@ -62,7 +63,7 @@ public class VentaController {
             ventaService.deleteById(id);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
         }
     }
 }
