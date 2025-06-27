@@ -65,6 +65,15 @@ public class Articulo {
     @JoinColumn(name = "id_proveedor_predeterminado")
     private Proveedor proveedorPredeterminado;
 
+    public void calcularTodo(float precioUnitario, float costoPedido, int demoraEntrega, float tiempoRevision, TipoModelo tipoModelo) {
+        
+        calcularStockSeguridad(demoraEntrega, tiempoRevision, tipoModelo);
+        calcularLoteOptimo(costoPedido, tipoModelo, demoraEntrega, tiempoRevision);
+        calcularPuntoPedido(demoraEntrega, tipoModelo);
+        calcularInventarioMaximo();
+        calcularCGI(precioUnitario, costoPedido);
+    }
+
     public void calcularCGI(float precioUnitario, float costoPedido) {
         // demanda * precioUnitario + demanda/cantidad * costoPedido + costoAlmacenamiento*cantidad/2
 
@@ -100,12 +109,19 @@ public class Articulo {
         }
     }
 
-    public void calcularPuntoPedido(int demoraEntrega) {
-        this.puntoPedido = (int) (this.demandaArticulo * demoraEntrega + this.stockSeguridad);
+    public void calcularPuntoPedido(int demoraEntrega, TipoModelo tipoModelo) {
+        if (Objects.equals(tipoModelo, TipoModelo.LOTE_FIJO)) {
+            // lote fijo
+            // demanda diaria * (numeroDiasEntreRevision + TiempoEntrega) + z * desviacionStandar * (numeroDiasEntreRevision + TiempoEntrega) - nivelInventarioActual
+            this.puntoPedido = (int) (this.demandaArticulo * demoraEntrega + this.stockSeguridad);
+        } else {
+            this.puntoPedido = 0;
+        }
+        
     }
 
-    public int calcularInventarioMaximo() {
+    public void calcularInventarioMaximo() {
         // Cantidad * ( 1 - demandaDiaria/producciondiaria)
-        return (int) (this.loteOptimo * (1 - this.demandaArticulo / 365 / this.produccionDiaria));
+        this.inventarioMaximo = (int) (this.loteOptimo * (1 - this.demandaArticulo / 365 / this.produccionDiaria));
     }
 }

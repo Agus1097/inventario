@@ -57,13 +57,12 @@ public class ProveedorService {
 
             if (Objects.isNull(articulo.getProveedorPredeterminado())) {
                 articulo.setProveedorPredeterminado(proveedor);
-                articulo.calcularStockSeguridad(pa.getDemoraEntrega(), pa.getTiempoRevision(), pa.getTipoModelo());
-                articulo.calcularLoteOptimo(pa.getCargosPedido(), pa.getTipoModelo(), pa.getDemoraEntrega(), pa.getTiempoRevision());
-                articulo.calcularPuntoPedido(pa.getDemoraEntrega());
-                articulo.calcularInventarioMaximo();
-                articulo.calcularCGI(pa.getPrecioUnitario(), pa.getCargosPedido());
+                
             }
-
+            if (articulo.getProveedorPredeterminado().getId() == proveedor.getId()) {
+                articulo.calcularTodo(pa.getPrecioUnitario(), pa.getCargosPedido(), pa.getDemoraEntrega(), pa.getTiempoRevision(), pa.getTipoModelo());
+                articuloRepository.save(articulo);
+            }
             pa.setProveedor(proveedor);
         }
 
@@ -95,6 +94,11 @@ public class ProveedorService {
                     if (paDTO.getCargosPedido() != null) existente.setCargosPedido(paDTO.getCargosPedido());
                     if (paDTO.getTiempoRevision() != null) existente.setTiempoRevision(paDTO.getTiempoRevision());
                     if (paDTO.getTipoModelo() != null) existente.setTipoModelo(paDTO.getTipoModelo());
+                    
+                    if (articulo.getProveedorPredeterminado().getId() == existente.getId()) {
+                        articulo.calcularTodo(existente.getPrecioUnitario(), existente.getCargosPedido(), existente.getDemoraEntrega(), existente.getTiempoRevision(), existente.getTipoModelo());
+                        articuloRepository.save(articulo);
+                    }
                 } else {
                     // Si no existe, lo crea y lo agrega al proveedor
                     ProveedorArticulo nuevo = new ProveedorArticulo();
@@ -109,13 +113,11 @@ public class ProveedorService {
 
                     if (Objects.isNull(articulo.getProveedorPredeterminado())) {
                         articulo.setProveedorPredeterminado(proveedor);
-                        articulo.calcularStockSeguridad(nuevo.getDemoraEntrega(), nuevo.getTiempoRevision(), nuevo.getTipoModelo());
-                        articulo.calcularLoteOptimo(nuevo.getCargosPedido(), nuevo.getTipoModelo(), nuevo.getDemoraEntrega(), nuevo.getTiempoRevision());
-                        articulo.calcularPuntoPedido(nuevo.getDemoraEntrega());
-                        articulo.calcularInventarioMaximo();
-                        articulo.calcularCGI(nuevo.getPrecioUnitario(), nuevo.getCargosPedido());
+                        articulo.calcularTodo(nuevo.getPrecioUnitario(), nuevo.getCargosPedido(), nuevo.getDemoraEntrega(), nuevo.getTiempoRevision(), nuevo.getTipoModelo());
                         articuloRepository.save(articulo);
                     }
+
+                    
                 }
             }
         }

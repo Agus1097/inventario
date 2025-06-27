@@ -98,7 +98,7 @@ public class ArticuloService {
 
             articulo.calcularLoteOptimo(pa.getCargosPedido(), pa.getTipoModelo(), pa.getDemoraEntrega(), pa.getTiempoRevision());
             articulo.calcularStockSeguridad(pa.getDemoraEntrega(), pa.getTiempoRevision(), pa.getTipoModelo());
-            articulo.calcularPuntoPedido(pa.getDemoraEntrega());
+            articulo.calcularPuntoPedido(pa.getDemoraEntrega(), pa.getTipoModelo());
             articulo.calcularInventarioMaximo();
             articulo.calcularCGI(pa.getPrecioUnitario(), pa.getCargosPedido());
         }
@@ -153,7 +153,7 @@ public class ArticuloService {
 
         articulo.calcularLoteOptimo(pa.getCargosPedido(), pa.getTipoModelo(), pa.getDemoraEntrega(), pa.getTiempoRevision());
             articulo.calcularStockSeguridad(pa.getDemoraEntrega(), pa.getTiempoRevision(), pa.getTipoModelo());
-            articulo.calcularPuntoPedido(pa.getDemoraEntrega());
+            articulo.calcularPuntoPedido(pa.getDemoraEntrega(), pa.getTipoModelo());
             articulo.calcularInventarioMaximo();
             articulo.calcularCGI(pa.getPrecioUnitario(), pa.getCargosPedido());
 

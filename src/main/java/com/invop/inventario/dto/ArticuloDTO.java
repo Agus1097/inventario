@@ -27,26 +27,26 @@ public class ArticuloDTO {
 
     @NotNull(message = "La producción diaria no puede ser nula.")
     @PositiveOrZero(message = "La producción diaria no puede ser negativa.")
-    private float produccionDiaria;
+    private Float produccionDiaria;
 
     @NotNull(message = "La demanda del artículo no puede ser nula.")
     @PositiveOrZero(message = "La demanda del artículo no puede ser negativa.")
-    private float demandaArticulo;
+    private Float demandaArticulo;
 
     @NotNull(message = "El costo de almacenamiento no puede ser nulo.")
     @PositiveOrZero(message = "El costo de almacenamiento no puede ser negativo.")
-    private float costoAlmacenamiento;
+    private Float costoAlmacenamiento;
 
     @NotNull(message = "El costo de venta no puede ser nulo.")
     @PositiveOrZero(message = "El costo de venta no puede ser negativo.")
-    private float costoVenta;
+    private Float costoVenta;
 
     @NotNull(message = "El stock actual no puede ser nulo.")
     @PositiveOrZero(message = "El stock actual no puede ser negativo.")
-    private int stockActual;
+    private Integer stockActual;
 
     @NotNull(message = "El valor de Z no puede ser nulo.")
-    private float z;
+    private Float z;
 
     @NotNull(message = "La desviación estándar no puede ser nula.")
     @PositiveOrZero(message = "La desviación estándar no puede ser negativa.")
@@ -56,13 +56,13 @@ public class ArticuloDTO {
 
     private LocalDate fechaBajaArticulo;
 
-    private int stockSeguridad;
+    private Integer stockSeguridad;
 
-    private int loteOptimo;
+    private Integer loteOptimo;
 
-    private int inventarioMaximo;
+    private Integer inventarioMaximo;
 
-    private int puntoPedido;
+    private Integer puntoPedido;
 
     private Float CGI;
 }
