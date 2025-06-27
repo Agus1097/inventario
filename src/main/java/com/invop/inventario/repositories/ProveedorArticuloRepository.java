@@ -17,4 +17,6 @@ public interface ProveedorArticuloRepository extends JpaRepository<ProveedorArti
     List<Proveedor> findProveedoresByArticuloId(@Param("articuloId") Long articuloId);
 
     void deleteByArticuloAndProveedor(Articulo articulo, Proveedor proveedor);
+
+    List<ProveedorArticulo> findAllByArticulo(Articulo articulo);
 }

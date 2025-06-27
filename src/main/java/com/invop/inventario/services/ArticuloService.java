@@ -125,6 +125,11 @@ public class ArticuloService {
             throw new IllegalArgumentException("El artículo tiene órdenes de compra pendientes o enviadas y no puede ser dado de baja");
         }
         a.setFechaBajaArticulo(LocalDate.now());
+
+        // Eliminar todas las instancias de ProveedorArticulo relacionadas a este artículo
+        List<ProveedorArticulo> relaciones = proveedorArticuloRepository.findAllByArticulo(a);
+        proveedorArticuloRepository.deleteAll(relaciones);
+
         articuloRepository.save(a);
     }
 
