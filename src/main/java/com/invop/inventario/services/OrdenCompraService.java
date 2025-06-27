@@ -99,9 +99,6 @@ public class OrdenCompraService {
             }
         } else if (EstadoOrden.ENVIADO.equals(estadoActual)) {
             // No se puede modificar cantidad ni cancelar
-            if (ordenCompraDetails.getCantidad() != ordenCompra.getCantidad()) {
-                throw new IllegalArgumentException("No se puede modificar la cantidad de una orden enviada.");
-            }
             if (EstadoOrden.CANCELADO.equals(nuevoEstado)) {
                 throw new IllegalArgumentException("No se puede cancelar una orden enviada.");
             }
@@ -114,11 +111,6 @@ public class OrdenCompraService {
                 articuloService.saveUpdate(articulo);
 
                 // Informar si el stockActual no supera el puntoPedido
-                if (articulo.getStockActual() <= articulo.getPuntoPedido()) {
-                    // Aquí puedes lanzar una excepción, retornar un mensaje, o registrar un aviso según tu arquitectura
-                    // Ejemplo: lanzar excepción con mensaje informativo
-                    throw new IllegalStateException("El stock actual del artículo sigue siendo igual o menor al punto de pedido.");
-                }
             }
         } else if (EstadoOrden.FINALIZADO.equals(estadoActual) || EstadoOrden.CANCELADO.equals(estadoActual)) {
             throw new IllegalArgumentException("No se puede modificar una orden finalizada o cancelada.");
