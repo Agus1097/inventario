@@ -52,18 +52,23 @@ public class OrdenCompraService {
             throw new IllegalArgumentException("Ya existe una orden de compra pendiente o enviada para este artículo.");
         }
 
-        OrdenCompra ordenCompra = new OrdenCompra();
+        // Obtener ProveedorArticulo y validar modelo/lote
+        ProveedorArticulo proveedorArticulo = proveedorArticuloRepository
+                .findByArticuloAndProveedor(articulo, proveedor)
+                .orElseThrow(() -> new EntityNotFoundException("No existe relación Proveedor-Articulo para este artículo y proveedor"));
 
+        // Validación: si el modelo es LOTE_FIJO y la cantidad es menor que loteOptimo, error
+        if (proveedorArticulo.getTipoModelo() == TipoModelo.LOTE_FIJO
+                && dto.getCantidad() < articulo.getLoteOptimo()) {
+            throw new IllegalArgumentException("La cantidad pedida no puede ser menor que el lote óptimo para este artículo.");
+        }
+
+        OrdenCompra ordenCompra = new OrdenCompra();
         ordenCompra.setCantidad(dto.getCantidad());
         ordenCompra.setArticulo(articulo);
         ordenCompra.setProveedor(proveedor);
         ordenCompra.setFechaCreacionOrdenCompra(LocalDate.now());
         ordenCompra.setEstadoOrden(EstadoOrden.PENDIENTE);
-
-        // Obtener ProveedorArticulo y calcular montoTotal
-        ProveedorArticulo proveedorArticulo = proveedorArticuloRepository
-                .findByArticuloAndProveedor(articulo, proveedor)
-                .orElseThrow(() -> new EntityNotFoundException("No existe relación Proveedor-Articulo para este artículo y proveedor"));
 
         float montoTotal = ordenCompra.getCantidad() * proveedorArticulo.getPrecioUnitario();
         ordenCompra.setMontoTotal(montoTotal);
@@ -81,10 +86,15 @@ public class OrdenCompraService {
         // Solo se puede editar la cantidad si la orden está en estado pendiente
         if (EstadoOrden.PENDIENTE.equals(estadoActual)) {
             if (ordenCompraDetails.getCantidad() != ordenCompra.getCantidad()) {
-                // Recalcular montoTotal usando precioUnitario de ProveedorArticulo
+                // Validación: si el modelo es LOTE_FIJO y la cantidad es menor que loteOptimo, error
                 ProveedorArticulo proveedorArticulo = proveedorArticuloRepository
                         .findByArticuloAndProveedor(ordenCompra.getArticulo(), ordenCompra.getProveedor())
                         .orElseThrow(() -> new EntityNotFoundException("No existe relación Proveedor-Articulo para este artículo y proveedor"));
+                if (proveedorArticulo.getTipoModelo() == TipoModelo.LOTE_FIJO
+                        && ordenCompraDetails.getCantidad() < ordenCompra.getArticulo().getLoteOptimo()) {
+                    throw new IllegalArgumentException("La cantidad pedida no puede ser menor que el lote óptimo para este artículo.");
+                }
+                // Recalcular montoTotal usando precioUnitario de ProveedorArticulo
                 ordenCompra.setCantidad(ordenCompraDetails.getCantidad());
                 float montoTotal = ordenCompra.getCantidad() * proveedorArticulo.getPrecioUnitario();
                 ordenCompra.setMontoTotal(montoTotal);
@@ -109,8 +119,6 @@ public class OrdenCompraService {
                 Articulo articulo = articuloService.findById(ordenCompra.getArticulo().getId());
                 articulo.setStockActual(articulo.getStockActual() + ordenCompra.getCantidad());
                 articuloService.saveUpdate(articulo);
-
-                // Informar si el stockActual no supera el puntoPedido
             }
         } else if (EstadoOrden.FINALIZADO.equals(estadoActual) || EstadoOrden.CANCELADO.equals(estadoActual)) {
             throw new IllegalArgumentException("No se puede modificar una orden finalizada o cancelada.");
