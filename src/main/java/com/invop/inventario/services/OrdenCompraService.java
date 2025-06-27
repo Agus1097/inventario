@@ -9,7 +9,7 @@ import com.invop.inventario.repositories.ProveedorArticuloRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 
-import org.aspectj.weaver.ast.Or;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -125,7 +125,7 @@ public class OrdenCompraService {
                     .findByArticuloAndProveedor(articulo, proveedor)
                     .orElseThrow(() -> new EntityNotFoundException("No existe relación Proveedor-Articulo para este artículo y proveedor"));
 
-                articulo.calcularTodo(pa.getPrecioUnitario(), pa.getCargosPedido(), pa.getDemoraEntrega(), pa.getTiempoRevision(),pa.getTipoModelo());
+                articulo.calcularLoteOptimo(pa.getCargosPedido(), pa.getTipoModelo(), pa.getDemoraEntrega(), pa.getTiempoRevision());
         }
                 articuloService.saveUpdate(articulo);
             }

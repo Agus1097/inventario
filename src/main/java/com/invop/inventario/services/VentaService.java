@@ -64,7 +64,7 @@ public class VentaService {
                     .findByArticuloAndProveedor(articulo, proveedor)
                     .orElseThrow(() -> new EntityNotFoundException("No existe relación Proveedor-Articulo para este artículo y proveedor"));
 
-            articulo.calcularTodo(pa.getPrecioUnitario(), pa.getCargosPedido(), pa.getDemoraEntrega(), pa.getTiempoRevision(),pa.getTipoModelo());
+            articulo.calcularLoteOptimo(pa.getCargosPedido(), pa.getTipoModelo(), pa.getDemoraEntrega(), pa.getTiempoRevision());
         }
         articuloRepository.save(articulo);
 
